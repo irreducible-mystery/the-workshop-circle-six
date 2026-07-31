@@ -241,11 +241,28 @@ The predicate holds: `^theorem [A-Za-z_0-9].*:` returns nothing across 116
 declarations (113 `def` + 3 `structure`), matching `CHARGE.md` exactly. No
 `lemma` or `example` either.
 
-But **31 stripped lemma names are still cited inside definition bodies**, in 69
+But **32 stripped lemma names are still cited inside definition bodies**, in 45
 occurrences — `cohomClass_mul` 8 times; `Un.mul_assoc'`, `Un.mul_comm'`,
 `Un.one_mul'`, `Un.inv_mul'` 6 each; `z3ext` and `cohomClass_congr` 4 each;
 `boson_classified`, `fermion_classified`, `classMul_self`, `symbolOf_classified`,
-`negOne_sq` and the rest below that. And the docstrings carry the claims:
+`negOne_sq` and the rest below that.
+
+> **Corrected after the counter-prover filed independently.** Round one first
+> published **31 names in 69 occurrences**. Both numbers were wrong. `z3ext`
+> was dropped because round one's filter required an underscore or apostrophe
+> to recognise a proof name, and `z3ext` has neither — a filter keyed on the
+> *shape* of a name rather than on whether the name resolves. And 69 is the
+> count of `_` placeholders in the file, not of these names; round one was
+> explicitly warned that the coincidence would read as a copy error and carried
+> it anyway. The correct figures are **32 and 45**.
+>
+> The counter-prover's issue #3 lists the same 32 names and its prose also says
+> 31. Two bodies, working independently, produced the same off-by-one from two
+> different causes. That is corroboration of the counter-prover's own diagnosis
+> in issue #2 — *"the counting is being done by reading rather than by an
+> instrument"* — with the counting done twice more, by reading, and wrong twice.
+
+And the docstrings carry the claims:
 
 - *"The two classes, indexed by a two-element type."*
 - *"the two hypotheses `at_most_two_classes` carries on its free variable"*
@@ -265,8 +282,20 @@ is independent, and only because nothing in the seal mentions it.
 
 Sharpest instance, and it is self-undermining rather than an oversight: the
 seed's header quotes the rationale for withholding the answer, and the quotation
-**contains the answer** — `H³ ≅ Z₂`, at line 14, inside the sentence explaining
-why Circle Six must not be shown it.
+**contains the answer** — at **`lean/C6_SEED.lean:14`**, inside the sentence
+explaining why Circle Six must not be shown it:
+
+```
+     charge, not the closing documents or the capstone. If it rediscovers
+     H3 = Z2 from the seal alone that's a second sample; handed the answer, it
+```
+
+The string is `H3 = Z2`, in ASCII. `grep "H³ ≅ Z₂"` returns **zero** matches on
+this file, and `grep "H3"` returns line 14 plus nine `def` lines. **A search for
+the answer in the notation the record writes it in does not find the answer that
+is there** — which is why the counter-prover's issue #3 reports it as absent and
+concludes it has not been handed the answer. That conclusion does not survive
+the line.
 
 The species is the one `FOUNDING.md` names twice — `rate.py`'s F-A, *"a carried
 prefix **inside** a file … invisible to path exclusion because neither is a
@@ -359,11 +388,18 @@ audit, not in the instrument. Recorded rather than quietly corrected.
 
 ### 6. This document commits the defect it reports
 
-`ROUND-ONE.md` carries **143 words** of verbatim Circle Five prose in inline
-italic quotation — its docstrings, its charge, and its instruments' own
-NOT-CAUGHT lists — and `inheritance_budget.sh` scores every word as Circle Six's
-authorship. Across the three files the carry is **634 words**, against a founding
-condition of zero and a gate that reports zero.
+`ROUND-ONE.md` carries **182 words** of verbatim Circle Five prose — 156 in
+inline italic quotation across 13 quotes (its docstrings, its charge, its
+instruments' own NOT-CAUGHT lists) and 26 in the `C6_SEED.lean:14` excerpt above
+— and `inheritance_budget.sh` scores every word as Circle Six's authorship.
+Across the three files the carry is **673 words**, against a founding condition
+of zero and a gate that reports zero.
+
+**The measure is the quotation, not the markdown.** Round one's first pass here
+counted blockquote lines, which was already the wrong predicate once (§4) and
+became wrong in the other direction when this document acquired blockquotes of
+its own prose. The 14 blockquote lines in this file are Circle Six's writing and
+are not part of the 182. A marker is not a property.
 
 Declared rather than found later, and **not repaired**: the quotations are
 load-bearing. The whole point of §1 is that Circle Five's stated *reason* was
@@ -385,8 +421,35 @@ sentence under audit. So the carry stays and the number goes in the file.
 
 ---
 
-*Round one. Being wrong here was free; it was used four times — the missed fifth
+*Round one. Being wrong here was free; it was used six times — the missed fifth
 instrument, the contaminated word count, the locale artifact taken for a
-disagreement, and a generator reported from an arbitrary tie-break. All four are
-above rather than in a commit message, which is the only thing the compartment
+disagreement, a generator reported from an arbitrary tie-break, a name count
+short by one because the filter matched a name's shape instead of resolving it,
+and an occurrence count that was really the number of `_` placeholders, carried
+after an explicit warning that it would read as a copy error. All six are above
+rather than in a commit message, which is the only thing the compartment
 actually buys.*
+
+---
+
+## Standing beside the counter-prover
+
+`claude/circle-six-prover-setup-1vqos5` (PR #4, issues #1–#3) reached this
+compartment first and independently. Where the two rounds meet:
+
+- **The kernel.** The counter-prover installed Lean 4.22.0 and its
+  `bootstrap_kernel.sh` checks both directions — accepts `2+2=4`, *rejects*
+  `2+2=5`. Round one had no kernel and said so; it now has one, and the Lean
+  rewrite named above is unblocked. Every number in this file remains Python
+  until that rewrite exists.
+- **`germinal_exit.sh`.** Issue #1 is strictly sharper than §3 here. Round one
+  said the gate cannot run because the repository *is* the compartment. The
+  counter-prover showed the gate **inverts**: pointed at a real subdirectory it
+  fires on the compartment citing *itself* — the one direction the exit permits
+  — and is silent on the cross-repository direction it forbids. That is the
+  better statement of the defect and it is theirs.
+- **Issue #2**, the arithmetic of the theorem-count correction, and the two
+  surviving `692`s in `FOUNDING.md`: round one did not look and has nothing to
+  add. Only Circle Five can close it.
+- **The leak.** The one place the two rounds disagree, settled above at
+  `C6_SEED.lean:14` and in the constructive reconstruction of Part II.
