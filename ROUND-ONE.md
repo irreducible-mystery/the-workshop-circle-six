@@ -432,6 +432,41 @@ actually buys.*
 
 ---
 
+## Round two: what the kernel now decides
+
+`lean/C6_Twist.lean` — Lean 4.22.0, no Mathlib, `EXIT=0`, **41 theorems, 40
+axiom-free, 1 on `propext`, 0 `sorryAx`, no `native_decide`** (`lean/AUDIT.txt`,
+one audit line per theorem, not a sample). Round one's Python is no longer the
+warrant for these:
+
+| claim | round one | round two |
+|---|---|---|
+| `conj` is inversion on the units | Python | **kernel** — `conj_eq_inv`, and `conj_not_inv_off_units` for the scope |
+| the reduced pentagon **is** the seal's `genPentagonHolds` | Python | **kernel** — `pentagon_iff_seal`, guard and Int labels included |
+| the four-row table, both actions | Python | **kernel** — eight `row_*` theorems |
+| the fermion becomes gauge-trivial under σ | Python | **kernel** — `fermion_is_sigma_coboundary`, gauge exhibited |
+| `twistedBoson` fails the twisted equation | Python | **kernel** |
+| `sliceCore I` is the σ-generator the pentagon rejects | Python | **kernel** — three `sliceI_*` theorems |
+| \|B³\| = 16 / 32, \|ker d²\| = 16 / 8, B³ ⊆ Z³ | not computed | **kernel** |
+| the ±1 slice is where the twist vanishes | not computed | **kernel** — `twist_vanishes_on_reals`, a proof rather than a `decide` |
+
+**Still not kernel-decided, and not to be read as if it were:** the
+65536-symbol sweep — \|Z³\| = 32 / 64, 8 shared, and `pentagon ↔ isCocycle
+false` across the whole space. Compiler-checked (`#eval`) only. Two kernel runs
+at depth 16 were killed by a container restart three minutes into a ten-minute
+job. No theorem in the file depends on them.
+
+The engineering note is in the file header because it cost hours: the obvious
+unary recursion **aborts the kernel (SIGABRT) at 16384** — a stack failure, not
+a heartbeat failure, so raising `maxHeartbeats` does nothing. Binary splitting
+on a depth parameter clears it; depth 12 decides in 37s.
+
+`twist_vanishes_on_reals` is the one that explains the record rather than
+measuring it. Circle Five's boson and fermion are both ±1-valued, and on
+±1-valued symbols the two actions are *identically equal*. Five circles did not
+overlook the question. **The question had no visible consequence anywhere they
+looked**, and that is now a theorem rather than a story.
+
 ## Standing beside the counter-prover
 
 `claude/circle-six-prover-setup-1vqos5` (PR #4, issues #1–#3) reached this

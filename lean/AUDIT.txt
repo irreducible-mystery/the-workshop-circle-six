@@ -1,0 +1,52 @@
+Axiom audit — lean/C6_Twist.lean, Lean 4.22.0, no Mathlib.
+One '#print axioms' line per theorem in the file: the audit covers every
+theorem, not a curated sample.
+
+theorems in file : 41
+audit lines      : 41
+axiom-free       : 40
+uses propext only: 1
+sorryAx          : 0
+native_decide    : 0
+
+'toGZ_mul' does not depend on any axioms
+'toGZ_conj' does not depend on any axioms
+'toGZ_inj' does not depend on any axioms
+'is_unit' does not depend on any axioms
+'conj_eq_inv' does not depend on any axioms
+'conj_is_the_inverse' does not depend on any axioms
+'conj_not_inv_off_units' does not depend on any axioms
+'sigma_ne_id' does not depend on any axioms
+'lhs_reduces' does not depend on any axioms
+'rhs_reduces' does not depend on any axioms
+'lhs_reduces_U' does not depend on any axioms
+'rhs_reduces_U' does not depend on any axioms
+'pentagon_iff_seal' does not depend on any axioms
+'row_one_untwisted' does not depend on any axioms
+'row_one_twisted' does not depend on any axioms
+'row_i_untwisted' does not depend on any axioms
+'row_i_twisted' does not depend on any axioms
+'row_neg1_untwisted' does not depend on any axioms
+'row_neg1_twisted' does not depend on any axioms
+'row_negi_untwisted' does not depend on any axioms
+'row_negi_twisted' does not depend on any axioms
+'fermion_is_sigma_coboundary' does not depend on any axioms
+'fermion_not_untwisted_coboundary' does not depend on any axioms
+'twistedBoson_pentagon' does not depend on any axioms
+'twistedBoson_not_sigma_cocycle' does not depend on any axioms
+'twistedBoson_untwisted_cocycle' does not depend on any axioms
+'twistedBoson_gauge_trivial' does not depend on any axioms
+'sliceI_fails_pentagon' does not depend on any axioms
+'sliceI_is_sigma_cocycle' does not depend on any axioms
+'sliceI_not_sigma_coboundary' does not depend on any axioms
+'fakeCocycle_fails_both' does not depend on any axioms
+'conj_fixes_reals' does not depend on any axioms
+'twist_vanishes_on_reals' depends on axioms: [propext]
+'boson_real' does not depend on any axioms
+'fermion_real' does not depend on any axioms
+'B3_untwisted' does not depend on any axioms
+'B3_twisted' does not depend on any axioms
+'ker_untwisted' does not depend on any axioms
+'ker_twisted' does not depend on any axioms
+'cob_subset_cocycles_untwisted' does not depend on any axioms
+'cob_subset_cocycles_twisted' does not depend on any axioms
