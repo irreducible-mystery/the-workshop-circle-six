@@ -848,6 +848,10 @@ theorem conj_eq_self {z : GZ} (h : z.im = 0) : conj z = z := by
   · rfl
   · show -z.im = z.im
     rw [h]
+    -- `rw` leaves `-0 = 0`; that is `rfl` at default transparency
+    -- (`Int.neg (ofNat 0) = negOfNat 0 = ofNat 0`) but not at the reducible
+    -- transparency `rw`'s closing `rfl` uses, so it has to be discharged here.
+    rfl
 
 theorem Fs_im_zero {f : GZ} (h : f.im = 0) (a b c d x y : Int) :
     (Fs f a b c d x y).im = 0 := by
@@ -873,7 +877,11 @@ theorem sig_Fs {f : GZ} (h : f.im = 0) (e a b c d x y : Int) :
 theorem pentLhsSig_real {f : GZ} (h : f.im = 0) (a b c d : Int) :
     pentLhsSig f a b c d = pentLhs f a b c d := by
   unfold pentLhsSig pentLhs
-  rw [sig_Fs h]
+  -- The `let`s of `pentLhsSig` elaborate to `letFun` (printed `have`), so the
+  -- occurrence of `sig a (Fs f b c d v u w)` mentions variables bound inside
+  -- them and plain `rw` cannot abstract it.  `simp only` descends through the
+  -- binders (and zeta-reduces them), so the same rewrite goes through.
+  simp only [sig_Fs h]
 
 theorem pentagonHoldsSig_iff_real {f : GZ} (h : f.im = 0) :
     pentagonHoldsSig f ↔ pentagonHolds f := by
