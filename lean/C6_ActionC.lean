@@ -594,3 +594,560 @@ theorem sig_witness_value : agreeOK (d2sig hSig) (gaugePhi gPlusI) = true := by 
 theorem gaugeInv_gPlusI_fails_sig :
     ¬ AgreeOnLabels (d2sig (gaugeInv gPlusI)) (gaugePhi gPlusI) :=
   not_agreeOnLabels_of_false (by decide)
+
+/-! ############################################################################
+    SECTION 2 — is `gaugeInv` an inversion?
+
+    The seal calls `gaugeInv g = conj ∘ g` "gauge inversion" and says every
+    theorem using it carries the unit hypothesis.  Reading C asks what happens
+    when the hypothesis is dropped, and then asks for the EXACT set on which it
+    may be dropped.
+    ############################################################################ -/
+
+/-- The monoid laws need no hypothesis at all: `gaugeComp` is associative and
+    commutative and `gaugeTrivial` is its identity, on ALL `Z[i]`-valued gauges.
+    So the unit hypothesis is not paying for the group structure in general — it
+    is paying for exactly one axiom, and Section 2 finds out which. -/
+theorem gaugeComp_assoc (g h k : Int → Int → GZ) :
+    gaugeComp (gaugeComp g h) k = gaugeComp g (gaugeComp h k) := by
+  funext a b; exact gz_mul_assoc _ _ _
+
+theorem gaugeComp_comm (g h : Int → Int → GZ) : gaugeComp g h = gaugeComp h g := by
+  funext a b; exact gz_mul_comm _ _
+
+theorem gaugeTrivial_left_unit (g : Int → Int → GZ) : gaugeComp gaugeTrivial g = g := by
+  funext a b; exact gz_one_mul _
+
+/-- **What `gaugeComp g (gaugeInv g)` actually is**: the NORM of the gauge,
+    placed on the real axis.  No hypothesis.  Everything in this section is a
+    corollary of this one line. -/
+theorem gaugeComp_gaugeInv (g : Int → Int → GZ) (a b : Int) :
+    gaugeComp g (gaugeInv g) a b = ⟨norm (g a b), 0⟩ := mul_conj_eq_norm (g a b)
+
+/-- **REFUTED.**  `gaugeComp g (gaugeInv g) = gaugeTrivial` is FALSE without the
+    unit hypothesis, and here is the counterexample: at `g ≡ 1+i` the composite
+    is the constant `2`, not `1`. -/
+theorem gaugeComp_gaugeInv_gPlusI (a b : Int) :
+    gaugeComp gPlusI (gaugeInv gPlusI) a b = ⟨2, 0⟩ := rfl
+
+theorem gaugeInv_not_inverse :
+    ¬ (∀ g : Int → Int → GZ, gaugeComp g (gaugeInv g) = gaugeTrivial) := by
+  intro h
+  have h0 := congrFun (congrFun (h gPlusI) 0) 0
+  rw [gaugeComp_gaugeInv_gPlusI] at h0
+  exact absurd h0 (by decide)
+
+/-- **The exact set, pointwise, both inclusions**: `z · conj z = 1` holds at `z`
+    if and only if `z` is a unit.  `←` is the seal's bridge; `→` is its converse,
+    which the seal never needed and which is what pins the set down. -/
+theorem mul_conj_eq_one_iff_isUnit (z : GZ) : mul z (conj z) = one ↔ IsUnit z :=
+  Iff.intro isUnit_of_mul_conj mul_conj_of_isUnit
+
+/-- **THE CHARACTERISATION.**  `gaugeInv` is an inversion for `gaugeComp` at
+    exactly the unit-valued gauges — not one gauge more, not one fewer.  Both
+    inclusions, no hypothesis on either side. -/
+theorem gaugeInv_isInverse_iff (g : Int → Int → GZ) :
+    gaugeComp g (gaugeInv g) = gaugeTrivial ↔ (∀ a b : Int, IsUnit (g a b)) := by
+  constructor
+  · intro h a b
+    exact (mul_conj_eq_one_iff_isUnit (g a b)).mp (congrFun (congrFun h a) b)
+  · intro h
+    funext a b
+    exact (mul_conj_eq_one_iff_isUnit (g a b)).mpr (h a b)
+
+/-- The same set, read through the norm: `gaugeInv` inverts `g` exactly where
+    `g` has norm 1.  This is the form in which the failure is quantitative —
+    `gPlusI` misses by a factor of 2, and nothing smaller than a unit exists. -/
+theorem gaugeInv_isInverse_iff_norm (g : Int → Int → GZ) :
+    gaugeComp g (gaugeInv g) = gaugeTrivial ↔ (∀ a b : Int, norm (g a b) = 1) := by
+  rw [gaugeInv_isInverse_iff]
+  constructor
+  · intro h a b; exact (isUnit_iff_norm_one (g a b)).mp (h a b)
+  · intro h a b; exact (isUnit_iff_norm_one (g a b)).mpr (h a b)
+
+/-- Non-vacuity for the positive half: the set on which `gaugeInv` inverts is not
+    empty — the trivial gauge is in it, and so is every `U(1)`-valued gauge the
+    seal writes down. -/
+theorem gaugeTrivial_isUnit (a b : Int) : IsUnit (gaugeTrivial a b) := isUnit_one
+
+theorem gaugeInv_isInverse_at_trivial :
+    gaugeComp gaugeTrivial (gaugeInv gaugeTrivial) = gaugeTrivial :=
+  (gaugeInv_isInverse_iff gaugeTrivial).mpr gaugeTrivial_isUnit
+
+/-- …and it is a proper subset: `gPlusI` is outside it, so the characterisation
+    separates something. -/
+theorem gPlusI_outside :
+    ¬ gaugeComp gPlusI (gaugeInv gPlusI) = gaugeTrivial := by
+  rw [gaugeInv_isInverse_iff]
+  intro h
+  exact gPlusI_not_isUnit 0 0 (h 0 0)
+
+/-! ############################################################################
+    SECTION 3 — `hexInvHolds f R = hexagonHolds f (conj R)`.
+
+    The seal names this "the R⁻¹-hexagon".  Two readings:
+      (i)  what is WRITTEN — the hexagon at the Galois conjugate of `R`;
+      (ii) what the NAME says — the hexagon at an inverse of `R`.
+    On units these are the same proposition.  Off the units (ii) has no subject
+    at all, and (i) still has one.
+    ############################################################################ -/
+
+/-- Reading (ii): the hexagon at every inverse of `R`.  Quantified rather than
+    applied, because off the units there may be no inverse to apply it to — and
+    that is exactly the phenomenon. -/
+def HexAtInverses (f R : GZ) : Prop := ∀ S : GZ, mul R S = one → hexagonHolds f S
+
+/-! ### The hexagon, decided by the kernel.  The two label constraints on `d` are
+    hypotheses, so the `Bool` guards on them rather than ignoring them. -/
+
+def hexConstraint (a b c d : Int) : Bool :=
+  decide (d = ((a + b) % 2 + c) % 2) && decide (d = ((a + c) % 2 + b) % 2)
+
+def hexAt (f R : GZ) (a b c d : Bool) : Bool :=
+  !(hexConstraint (lab a) (lab b) (lab c) (lab d)) ||
+    decide (hexLhs f R (lab a) (lab b) (lab c) (lab d)
+          = hexRhs f R (lab a) (lab b) (lab c) (lab d))
+
+def hexOK (f R : GZ) : Bool :=
+  allBool fun a => allBool fun b => allBool fun c => allBool fun d => hexAt f R a b c d
+
+theorem hexOK_sound {f R : GZ} (h : hexOK f R = true) : hexagonHolds f R := by
+  intro a b c d ha hb hc hd h1 h2
+  cases exists_bool_of_isLabel ha with
+  | intro A hA =>
+    cases exists_bool_of_isLabel hb with
+    | intro B hB =>
+      cases exists_bool_of_isLabel hc with
+      | intro C hC =>
+        cases exists_bool_of_isLabel hd with
+        | intro D hD =>
+          subst hA; subst hB; subst hC; subst hD
+          have hk : hexAt f R A B C D = true :=
+            allBool_sound (allBool_sound (allBool_sound (allBool_sound h A) B) C) D
+          have hcon : hexConstraint (lab A) (lab B) (lab C) (lab D) = true := by
+            show (decide _ && decide _) = true
+            rw [decide_eq_true h1, decide_eq_true h2]
+            rfl
+          unfold hexAt at hk
+          rw [hcon] at hk
+          exact of_decide_eq_true hk
+
+/-- Non-vacuity: `hexagonHolds` is inhabited, so nothing in this section is a
+    statement about the empty set. -/
+theorem hexagon_at_one_one : hexagonHolds one one := hexOK_sound (by decide)
+
+theorem hexInv_at_one_one : hexInvHolds one one := hexOK_sound (by decide)
+
+/-! ### What the hexagon costs at `f = 1`: the braiding must square to `1`. -/
+
+theorem hexagon_one_forces_sq {R : GZ} (h : hexagonHolds one R) : mul R R = one := by
+  have h1 := h 1 1 1 1 (Or.inr rfl) (Or.inr rfl) (Or.inr rfl) (Or.inr rfl) (by decide) (by decide)
+  have hl : hexLhs one R 1 1 1 1 = one := rfl
+  have hr : hexRhs one R 1 1 1 1 = mul (mul (mul one R) one) R := rfl
+  rw [hl, hr, gz_one_mul, gz_mul_one] at h1
+  exact h1.symm
+
+/-! ### The two readings agree on the units. -/
+
+/-- **AGREEMENT.**  If `R` is a unit then `conj R` is its one and only inverse,
+    so the written hexagon and the named hexagon are the same proposition. -/
+theorem hexInv_iff_hexAtInverses_of_isUnit {f R : GZ} (hR : IsUnit R) :
+    hexInvHolds f R ↔ HexAtInverses f R := by
+  constructor
+  · intro h S hS
+    rw [inv_eq_conj_of_isUnit hR hS]
+    exact h
+  · intro h
+    exact h (conj R) (mul_conj_of_isUnit hR)
+
+/-! ### …and diverge off them, at an explicit witness. -/
+
+/-- The witness: `1 + i`, norm 2. -/
+def onePlusI : GZ := ⟨1, 1⟩
+
+theorem onePlusI_norm : norm onePlusI = 2 := rfl
+
+/-- **There is NO inverse braiding for `1+i`** — `IsUnit` unfolded is exactly the
+    existence statement, so this is the literal claim that reading (ii) has no
+    subject here. -/
+theorem onePlusI_has_no_inverse : ¬ ∃ S : GZ, mul onePlusI S = one := by
+  rw [show (∃ S : GZ, mul onePlusI S = one) = IsUnit onePlusI from rfl,
+      isUnit_iff_norm_one, onePlusI_norm]
+  decide
+
+/-- **Reading (ii) is TRUE at the witness — vacuously**, and the vacuity is
+    stated, not hidden: it is true precisely because `onePlusI_has_no_inverse`
+    says the quantifier is empty.  Recorded as a finding, not as evidence. -/
+theorem hexAtInverses_onePlusI : HexAtInverses one onePlusI :=
+  fun S hS => absurd ⟨S, hS⟩ onePlusI_has_no_inverse
+
+/-- **Reading (i) is FALSE at the witness**, and not vacuously: the hexagon at
+    `conj (1+i) = 1−i` is a real constraint and `(1−i)² = −2i ≠ 1`. -/
+theorem hexInv_fails_onePlusI : ¬ hexInvHolds one onePlusI := by
+  intro h
+  have hs : mul (conj onePlusI) (conj onePlusI) = one := hexagon_one_forces_sq h
+  exact absurd hs (by decide)
+
+/-- **THE VERDICT.**  `hexInvHolds` is the GALOIS-CONJUGATE hexagon, not the
+    inverse-braiding hexagon.  The two names agree on every unit and separate at
+    `1+i`, where the conjugate exists and the inverse does not. -/
+theorem hexInv_is_not_hexAtInverses :
+    ¬ (∀ f R : GZ, hexInvHolds f R ↔ HexAtInverses f R) := fun h =>
+  hexInv_fails_onePlusI ((h one onePlusI).mpr hexAtInverses_onePlusI)
+
+/-- The seal's `conj R` is not even a one-sided inverse at the witness: it is off
+    by the norm, exactly as in Section 2. -/
+theorem onePlusI_conj_not_inverse : mul onePlusI (conj onePlusI) = ⟨2, 0⟩ := rfl
+
+/-! ############################################################################
+    SECTION 4 — THE HEADLINE.
+
+    The seal's down slots hold the symbol `conj`.  Two readings of that symbol:
+      (T) it is THE INVERSE — the coefficient module is `Z[i]^x` with `Z_2`
+          acting TRIVIALLY, and the alternating differential wants inverses;
+      (G) it is SIGMA — the Galois automorphism, i.e. `Z_2` acting NON-trivially.
+    Reading (T) does not determine a total function: off the units there is no
+    inverse to name, so (T) is a family of total functions, one for each way of
+    extending inversion off the units.  `InvertsUnits` is exactly that family.
+
+    (a) EVERY member of the family induces the SAME gauge action, the SAME gauge
+        equivalence and hence the SAME quotient as `conj`.  So no sealed theorem,
+        all of which quantify over unit-valued gauges, can distinguish (T) from
+        (G).  This is a statement about the record.
+    (b) The family is not a singleton: two of its members differ, with an
+        explicit witness, off the units.  So there really are two readings and
+        the record really is silent about which one it wrote.
+    ############################################################################ -/
+
+/-- A total map `s : Z[i] → Z[i]` **implements inversion** when it returns a
+    genuine multiplicative inverse at every unit.  Off the units it is
+    unconstrained — because there is nothing there to constrain it to. -/
+def InvertsUnits (s : GZ → GZ) : Prop := ∀ u : GZ, IsUnit u → mul u (s u) = one
+
+/-- The seal's gauge factor with the two down slots read through `s`. -/
+def gaugePhiWith (s : GZ → GZ) (g : Int → Int → GZ) (a b c : Int) : GZ :=
+  mul (mul (g a b) (g ((a + b) % 2) c)) (mul (s (g b c)) (s (g a ((b + c) % 2))))
+
+/-- The seal's gauge action with the two down slots read through `s`. -/
+def gaugeActWith (s : GZ → GZ) (g : Int → Int → GZ) (F : Int → Int → Int → GZ)
+    (a b c : Int) : GZ := mul (F a b c) (gaugePhiWith s g a b c)
+
+/-- The seal's gauge equivalence with the two down slots read through `s`. -/
+def GaugeEquivWith (s : GZ → GZ) (F F' : Int → Int → Int → GZ) : Prop :=
+  ∃ g : Int → Int → GZ, (∀ a b : Int, IsUnit (g a b)) ∧
+    ∀ a b c : Int, (a = 0 ∨ a = 1) → (b = 0 ∨ b = 1) → (c = 0 ∨ c = 1) →
+      gaugeActWith s g F a b c = F' a b c
+
+/-- The seal's own reading is the case `s = conj`, on the nose. -/
+theorem gaugePhiWith_conj (g : Int → Int → GZ) (a b c : Int) :
+    gaugePhiWith conj g a b c = gaugePhi g a b c := rfl
+
+theorem gaugeActWith_conj (g : Int → Int → GZ) (F : Int → Int → Int → GZ) (a b c : Int) :
+    gaugeActWith conj g F a b c = gaugeAct g F a b c := rfl
+
+theorem gaugeEquivWith_conj (F F' : Int → Int → Int → GZ) :
+    GaugeEquivWith conj F F' ↔ GaugeEquivOnLabels F F' := Iff.rfl
+
+/-- …and `conj` is in the family: reading (G) is one of the readings (T) allows.
+    This is the collision the whole file is about. -/
+theorem conj_invertsUnits : InvertsUnits conj := fun _ hu => mul_conj_of_isUnit hu
+
+/-! ### (a) — AGREEMENT ON THE UNITS. -/
+
+/-- **Any two implementations of inversion agree at every unit.**  Uniqueness of
+    inverses in a domain does the work; nothing about `Z[i]` beyond that. -/
+theorem invertsUnits_agree {s t : GZ → GZ} (hs : InvertsUnits s) (ht : InvertsUnits t)
+    {u : GZ} (hu : IsUnit u) : s u = t u :=
+  inv_unique (hs u hu) (ht u hu)
+
+/-- …and in particular every one of them agrees with the seal's `conj`. -/
+theorem invertsUnits_eq_conj {s : GZ → GZ} (hs : InvertsUnits s) {u : GZ} (hu : IsUnit u) :
+    s u = conj u := invertsUnits_agree hs conj_invertsUnits hu
+
+/-- **The gauge factor does not see the choice**, on unit-valued gauges. -/
+theorem gaugePhiWith_eq_gaugePhi_of_units {s : GZ → GZ} (hs : InvertsUnits s)
+    {g : Int → Int → GZ} (hg : ∀ a b : Int, IsUnit (g a b)) (a b c : Int) :
+    gaugePhiWith s g a b c = gaugePhi g a b c := by
+  show mul (mul (g a b) (g ((a + b) % 2) c)) (mul (s (g b c)) (s (g a ((b + c) % 2))))
+      = mul (mul (g a b) (g ((a + b) % 2) c))
+            (mul (conj (g b c)) (conj (g a ((b + c) % 2))))
+  rw [invertsUnits_eq_conj hs (hg b c), invertsUnits_eq_conj hs (hg a ((b + c) % 2))]
+
+/-- **Nor does the gauge action.** -/
+theorem gaugeActWith_eq_gaugeAct_of_units {s : GZ → GZ} (hs : InvertsUnits s)
+    {g : Int → Int → GZ} (hg : ∀ a b : Int, IsUnit (g a b))
+    (F : Int → Int → Int → GZ) (a b c : Int) :
+    gaugeActWith s g F a b c = gaugeAct g F a b c := by
+  show mul (F a b c) (gaugePhiWith s g a b c) = mul (F a b c) (gaugePhi g a b c)
+  rw [gaugePhiWith_eq_gaugePhi_of_units hs hg]
+
+/-- **HEADLINE (a).**  The seal's gauge equivalence is INVARIANT under the
+    choice: for every total implementation `s` of inversion, `GaugeEquivWith s`
+    is the very same relation as the seal's `GaugeEquivOnLabels`.  The relation
+    is what `GaugeClasses` quotients by, so the classes, the class group and
+    every statement about them are unchanged.  Replacing "the inverse" by
+    "sigma" in the down slots is INVISIBLE to the record. -/
+theorem gaugeEquivWith_iff_gaugeEquivOnLabels {s : GZ → GZ} (hs : InvertsUnits s)
+    (F F' : Int → Int → Int → GZ) : GaugeEquivWith s F F' ↔ GaugeEquivOnLabels F F' := by
+  constructor
+  · intro h
+    obtain ⟨g, hg, hgF⟩ := h
+    refine ⟨g, hg, fun a b c ha hb hc => ?_⟩
+    rw [← gaugeActWith_eq_gaugeAct_of_units hs hg F a b c]
+    exact hgF a b c ha hb hc
+  · intro h
+    obtain ⟨g, hg, hgF⟩ := h
+    refine ⟨g, hg, fun a b c ha hb hc => ?_⟩
+    rw [gaugeActWith_eq_gaugeAct_of_units hs hg F a b c]
+    exact hgF a b c ha hb hc
+
+/-- The same invariance for `gaugeInv` itself, which is the seal's other
+    inversion-shaped operation. -/
+def gaugeInvWith (s : GZ → GZ) (g : Int → Int → GZ) : Int → Int → GZ := fun a b => s (g a b)
+
+theorem gaugeInvWith_eq_gaugeInv_of_units {s : GZ → GZ} (hs : InvertsUnits s)
+    {g : Int → Int → GZ} (hg : ∀ a b : Int, IsUnit (g a b)) :
+    gaugeInvWith s g = gaugeInv g := by
+  funext a b
+  exact invertsUnits_eq_conj hs (hg a b)
+
+/-! ### (b) — DIVERGENCE OFF THE UNITS, with an explicit witness. -/
+
+/-- A second implementation of inversion: `conj` on the units (where it must be)
+    and the identity everywhere else (where nothing constrains it).  This is a
+    legitimate reading (T) and it is not `conj`. -/
+def sigmaAlt (z : GZ) : GZ := if norm z = 1 then conj z else z
+
+theorem sigmaAlt_invertsUnits : InvertsUnits sigmaAlt := by
+  intro u hu
+  have hn : norm u = 1 := (isUnit_iff_norm_one u).mp hu
+  show mul u (if norm u = 1 then conj u else u) = one
+  rw [if_pos hn]
+  exact mul_conj_of_isUnit hu
+
+/-- The two implementations part company at `1+i`. -/
+theorem sigmaAlt_ne_conj_at_onePlusI : sigmaAlt onePlusI ≠ conj onePlusI := by decide
+
+/-- **The gauge factors part company there too.**  Read as sigma: `4`.  Read as
+    an inverse extended by the identity: `−4`.  Same formula, same gauge, two
+    values — and no sealed theorem can be applied to either, because the gauge is
+    not unit-valued. -/
+theorem gaugePhiWith_sigmaAlt_gPlusI (a b c : Int) :
+    gaugePhiWith sigmaAlt gPlusI a b c = ⟨-4, 0⟩ := rfl
+
+theorem gaugePhi_ne_gaugePhiWith_sigmaAlt :
+    gaugePhiWith sigmaAlt gPlusI 0 0 0 ≠ gaugePhi gPlusI 0 0 0 := by
+  rw [gaugePhiWith_sigmaAlt_gPlusI, gaugePhi_gPlusI]
+  decide
+
+/-- **HEADLINE (b).**  The family of readings is not a singleton: two members of
+    it disagree on an explicit gauge. -/
+theorem readings_differ_off_units :
+    ∃ s : GZ → GZ, InvertsUnits s ∧
+      ∃ g : Int → Int → GZ, ∃ a b c : Int, gaugePhiWith s g a b c ≠ gaugePhi g a b c :=
+  ⟨sigmaAlt, sigmaAlt_invertsUnits, gPlusI, 0, 0, 0, gaugePhi_ne_gaugePhiWith_sigmaAlt⟩
+
+/-- …and the divergence survives into the gauge ACTION, not merely the factor:
+    at the boson symbol the two readings give `4` and `−4`. -/
+theorem gaugeAct_readings_differ :
+    gaugeActWith sigmaAlt gPlusI (sliceCore one) 0 0 0
+      ≠ gaugeAct gPlusI (sliceCore one) 0 0 0 := by decide
+
+/-- **THE HEADLINE, both halves in one statement.**  (a) says the record cannot
+    tell the trivial action from the Galois action; (b) says there is something
+    to tell.  Together: the non-trivial action has been in the record all along,
+    unnamed, invisible BY HYPOTHESIS — every gauge theorem the seal states
+    quantifies over unit-valued gauges, and that is exactly the set on which the
+    two readings coincide. -/
+theorem reading_C_headline :
+    (∀ s : GZ → GZ, InvertsUnits s → ∀ F F' : Int → Int → Int → GZ,
+        GaugeEquivWith s F F' ↔ GaugeEquivOnLabels F F') ∧
+    (∃ s : GZ → GZ, InvertsUnits s ∧
+        ∃ g : Int → Int → GZ, ∃ a b c : Int, gaugePhiWith s g a b c ≠ gaugePhi g a b c) :=
+  ⟨fun _s hs F F' => gaugeEquivWith_iff_gaugeEquivOnLabels hs F F', readings_differ_off_units⟩
+
+/-- Non-vacuity for (a): the invariant relation is inhabited.  `GaugeEquivOnLabels`
+    holds reflexively at the trivial gauge, so (a) is not a statement about an
+    empty relation. -/
+theorem gaugeAct_trivial (F : Int → Int → Int → GZ) (a b c : Int) :
+    gaugeAct gaugeTrivial F a b c = mul (F a b c) one := rfl
+
+theorem gaugeEquivOnLabels_refl (F : Int → Int → Int → GZ) : GaugeEquivOnLabels F F :=
+  ⟨gaugeTrivial, gaugeTrivial_isUnit, fun a b c _ _ _ => by
+    rw [gaugeAct_trivial]; exact gz_mul_one _⟩
+
+theorem gaugeEquivWith_inhabited {s : GZ → GZ} (hs : InvertsUnits s)
+    (F : Int → Int → Int → GZ) : GaugeEquivWith s F F :=
+  (gaugeEquivWith_iff_gaugeEquivOnLabels hs F F).mpr (gaugeEquivOnLabels_refl F)
+
+/-! ############################################################################
+    SECTION 5 — is `conj` distinguished among the near-mirrors, and would the
+    seal's controls have caught a Galois-action substitution?
+
+    `fakeMirror (a,b) = (a, 2b)` is the seal's own control: additive, fixes the
+    first coordinate, NOT multiplicative.  Reading C puts `conj` and `fakeMirror`
+    on one spectrum and asks the kernel where each sits — and then asks the
+    sharper question, which is not about the spectrum at all.
+
+    SCOPE, stated: the family below is the `Z`-LINEAR self-maps fixing the first
+    coordinate.  "Every additive map is `Z`-linear" is true and is NOT proved
+    here (it needs an induction over `Int` this file does not build), so the
+    characterisation is within the linear family and is claimed only there.
+    ############################################################################ -/
+
+/-- The `Z`-linear self-maps of `Z[i]` that fix the first coordinate: `r` is the
+    leak from `re` into `im`, `s` is the scale on `im`.  `conj` is `(0,−1)`,
+    the identity is `(0,1)`, and the seal's `fakeMirror` is `(0,2)`. -/
+def mirrorRS (r s : Int) (z : GZ) : GZ := ⟨z.re, r * z.re + s * z.im⟩
+
+theorem mirrorRS_id (z : GZ) : mirrorRS 0 1 z = z := by
+  apply GZ.eq_of
+  · rfl
+  · show 0 * z.re + 1 * z.im = z.im
+    omega
+
+theorem mirrorRS_conj (z : GZ) : mirrorRS 0 (-1) z = conj z := by
+  apply GZ.eq_of
+  · rfl
+  · show 0 * z.re + (-1) * z.im = -z.im
+    omega
+
+theorem mirrorRS_fakeMirror (z : GZ) : mirrorRS 0 2 z = fakeMirror z := by
+  apply GZ.eq_of
+  · rfl
+  · show 0 * z.re + 2 * z.im = 2 * z.im
+    omega
+
+/-- Every member of the family is additive and fixes the first coordinate — so
+    the two properties the seal's docstring names for `fakeMirror` are shared by
+    the whole family and single nothing out. -/
+theorem mirrorRS_add (r s : Int) (z w : GZ) :
+    mirrorRS r s (add z w) = add (mirrorRS r s z) (mirrorRS r s w) := by
+  apply GZ.eq_of
+  · rfl
+  · show r * (z.re + w.re) + s * (z.im + w.im)
+        = (r * z.re + s * z.im) + (r * w.re + s * w.im)
+    grind
+
+theorem mirrorRS_re (r s : Int) (z : GZ) : (mirrorRS r s z).re = z.re := rfl
+
+/-- **MULTIPLICATIVITY PINS THE FAMILY DOWN TO TWO POINTS.**  A `Z`-linear map
+    fixing `re` is multiplicative iff the leak `r` vanishes and the scale `s` is
+    `±1`.  The seal's restriction to `r = 0` is therefore not a choice — it is
+    forced — and `s = 2` (`fakeMirror`) is the nearest integer miss. -/
+theorem mirrorRS_mul_iff (r s : Int) :
+    (∀ z w : GZ, mirrorRS r s (mul z w) = mul (mirrorRS r s z) (mirrorRS r s w))
+      ↔ (r = 0 ∧ (s = 1 ∨ s = -1)) := by
+  constructor
+  · intro h
+    have hr : r = 0 := by
+      have h1 := congrArg GZ.im (h one one)
+      simp only [mirrorRS, mul, one] at h1
+      omega
+    subst hr
+    have h2 := congrArg GZ.re (h I I)
+    simp only [mirrorRS, mul, I] at h2
+    have hs2 : s * s = 1 := by grind
+    obtain ⟨hb, hb'⟩ := bound_of_sq_le_one (Int.le_of_eq hs2)
+    have hcase : s = -1 ∨ s = 0 ∨ s = 1 := by omega
+    refine ⟨rfl, ?_⟩
+    rcases hcase with hc | hc | hc
+    · exact Or.inr hc
+    · subst hc; exact absurd hs2 (by decide)
+    · exact Or.inl hc
+  · intro h
+    obtain ⟨hr, hs⟩ := h
+    subst hr
+    rcases hs with hs | hs
+    · subst hs
+      intro z w
+      rw [mirrorRS_id, mirrorRS_id, mirrorRS_id]
+    · subst hs
+      intro z w
+      rw [mirrorRS_conj, mirrorRS_conj, mirrorRS_conj]
+      exact (conj_mul z w).symm
+
+/-- **…and the two points are the identity and `conj`.**  So `conj` is the ONLY
+    non-trivial multiplicative near-mirror: it is distinguished, and the seal's
+    control is a test it passes. -/
+theorem multiplicative_mirrors_are_exactly_two (r s : Int) :
+    (∀ z w : GZ, mirrorRS r s (mul z w) = mul (mirrorRS r s z) (mirrorRS r s w))
+      ↔ ((∀ z : GZ, mirrorRS r s z = z) ∨ (∀ z : GZ, mirrorRS r s z = conj z)) := by
+  constructor
+  · intro h
+    obtain ⟨hr, hs⟩ := (mirrorRS_mul_iff r s).mp h
+    subst hr
+    rcases hs with hs | hs
+    · subst hs; exact Or.inl mirrorRS_id
+    · subst hs; exact Or.inr mirrorRS_conj
+  · intro h z w
+    rcases h with h | h
+    · rw [h, h, h]
+    · rw [h, h, h]; exact (conj_mul z w).symm
+
+/-- The seal's control, refuted by the kernel at the seal's own witness. -/
+theorem fakeMirror_witness : fakeMirror (mul I I) ≠ mul (fakeMirror I) (fakeMirror I) := by decide
+
+theorem fakeMirror_not_mul :
+    ¬ (∀ z w : GZ, fakeMirror (mul z w) = mul (fakeMirror z) (fakeMirror w)) :=
+  fun h => fakeMirror_witness (h I I)
+
+/-- `fakeMirror` is the family point `s = 2`, and `2 ∉ {1, −1}` — so its failure
+    is an instance of the characterisation, not an accident of the witness. -/
+theorem fakeMirror_fails_by_characterisation :
+    ¬ (∀ z w : GZ, mirrorRS 0 2 (mul z w) = mul (mirrorRS 0 2 z) (mirrorRS 0 2 w)) := by
+  intro h
+  obtain ⟨_, hs⟩ := (mirrorRS_mul_iff 0 2).mp h
+  rcases hs with hs | hs <;> exact absurd hs (by decide)
+
+/-! ### The battery, and the sharper question. -/
+
+/-- The seal's mirror controls, as a predicate on a candidate map: additive,
+    fixes the first coordinate, multiplicative.  `fakeMirror` was written to fail
+    the third. -/
+def PassesMirrorControls (m : GZ → GZ) : Prop :=
+  (∀ z w : GZ, m (add z w) = add (m z) (m w)) ∧
+  (∀ z : GZ, (m z).re = z.re) ∧
+  (∀ z w : GZ, m (mul z w) = mul (m z) (m w))
+
+theorem conj_add' (z w : GZ) : conj (add z w) = add (conj z) (conj w) :=
+  (conj_add z w).symm
+
+theorem conj_passesControls : PassesMirrorControls conj :=
+  ⟨conj_add', fun _ => rfl, fun z w => (conj_mul z w).symm⟩
+
+theorem fakeMirror_failsControls : ¬ PassesMirrorControls fakeMirror :=
+  fun h => fakeMirror_not_mul h.2.2
+
+/-- **`conj` and `fakeMirror` are NOT on the same spectrum.**  `conj` passes
+    every control `fakeMirror` was built to fail.  So the seal's control set,
+    applied to the symbol in the down slots, returns "fine". -/
+theorem conj_and_fakeMirror_separate :
+    PassesMirrorControls conj ∧ ¬ PassesMirrorControls fakeMirror :=
+  ⟨conj_passesControls, fakeMirror_failsControls⟩
+
+/-- **THE SHARPER ANSWER: the controls are irrelevant to the substitution.**
+    `sigmaAlt` FAILS the battery outright — it is not even additive — and yet it
+    implements inversion on the units and induces EXACTLY the seal's gauge
+    equivalence.  So passing or failing the mirror controls has no bearing on
+    what happens in the gauge layer: the controls could not have caught a
+    Galois-action substitution, because the substitution is invisible on the
+    only set the gauge layer looks at. -/
+theorem sigmaAlt_failsControls : ¬ PassesMirrorControls sigmaAlt := by
+  intro h
+  have hw := h.1 I I
+  exact absurd hw (by decide)
+
+theorem controls_are_blind_to_the_substitution :
+    ¬ PassesMirrorControls sigmaAlt ∧ InvertsUnits sigmaAlt ∧
+      (∀ F F' : Int → Int → Int → GZ,
+        GaugeEquivWith sigmaAlt F F' ↔ GaugeEquivOnLabels F F') :=
+  ⟨sigmaAlt_failsControls, sigmaAlt_invertsUnits,
+   fun F F' => gaugeEquivWith_iff_gaugeEquivOnLabels sigmaAlt_invertsUnits F F'⟩
+
+/-- The mirror image of the same point: `conj` PASSES every control, and is still
+    not an inverse — Section 2's counterexample is exactly that.  A map can pass
+    the whole battery and fail to be what the surrounding text calls it. -/
+theorem passing_controls_does_not_make_an_inverse :
+    PassesMirrorControls conj ∧ mul onePlusI (conj onePlusI) ≠ one :=
+  ⟨conj_passesControls, by decide⟩

@@ -22,6 +22,14 @@
   sigma; this file tries all thirty-two subsets and reports every one.
 -/
 
+-- Resource ceiling, not a proof concession.  The 32-placement sweep and the
+-- solution-set enumerations are large kernel computations; `whnf` exhausts the
+-- default 200000 heartbeats on them.  `C6_ActionA.lean` sets the same option on
+-- its 65536-symbol sweep for the same reason.  This raises no trust assumption:
+-- `decide` and `rfl` still run in the kernel and `native_decide` appears nowhere.
+set_option maxHeartbeats 0
+set_option maxRecDepth 10000
+
 /-! ############################################################################
     PART I — the seed's definitions, verbatim from `C6_SEED.lean`.
     ############################################################################ -/
