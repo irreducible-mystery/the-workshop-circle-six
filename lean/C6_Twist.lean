@@ -36,6 +36,23 @@
       the right answer because the question had no visible consequence anywhere
       they looked.
 
+    - The braiding sector answers the obvious objection to the line above.
+      `twist_vanishes_on_reals` says σ is invisible on ±1-valued SYMBOLS. It is
+      NOT invisible on the seal's braidings: `boson_braids_real` and
+      `fermion_braids_imaginary` show the boson braids by ±1 and the fermion
+      braids by ±i, and `sigma_swaps_fermion_braidings` shows σ exchanges the
+      fermion's two braidings with no fixed point. `edict_fermion_fails` shows
+      `SelfInverse` -- "the roomy edict" -- holds for the boson and fails for
+      the fermion, because i² = −1. The seal already writes σ there:
+      `hexInvHolds f R = hexagonHolds f (conj R)`.
+
+      So the honest statement is NOT "the question had no consequence." It is:
+      **σ is invisible in the pentagon sector and visibly a chirality swap in
+      the braiding sector, and the seal's own classification
+      (`IsClassifiedSymbol` = unit-valued + pentagon) is defined so that only
+      the first sector is looked at.** The consequence was always visible in
+      the ordinary place one looks for it. It was outside what got classified.
+
   WHAT IS **NOT** PROVED HERE, AND MUST NOT BE READ AS IF IT WERE
     The 65536-symbol sweep — |Z³| = 32 untwisted and 64 twisted, 8 shared, and
     the identity `pentagon ↔ isCocycle false` across the whole space. Those
@@ -289,11 +306,17 @@ def isReal (u : U) : Bool := u == .u1 || u == .um1
 
 theorem conj_fixes_reals : ∀ u : U, isReal u = true → U.conj u = u := by decide
 
+/-- Proved with an explicit `congrArg` rather than `simp`: `simp` pulls in
+    `propext`, and with this written out the whole file depends on NO axioms
+    at all -- not `propext`, not `Classical.choice`, not `Quot.sound`. -/
 theorem twist_vanishes_on_reals (F : Sym) (h : ∀ a b c, isReal (F a b c) = true) :
     ∀ a b c d, d3 true F a b c d = d3 false F a b c d := by
   intro a b c d
-  unfold d3 act
-  cases a <;> simp [conj_fixes_reals _ (h _ _ _)]
+  cases a
+  · rfl
+  · exact congrArg (fun z => U.mul (U.mul (U.mul (U.mul z (U.inv (F (xor true b) c d)))
+      (F true (xor b c) d)) (U.inv (F true b (xor c d)))) (F true b c))
+      (conj_fixes_reals _ (h b c d))
 
 theorem boson_real   : ∀ a b c, isReal (boson a b c) = true := by decide
 theorem fermion_real : ∀ a b c, isReal (fermion a b c) = true := by decide
@@ -332,3 +355,107 @@ theorem ker_untwisted : countKer false 256 = 16 := by decide
 theorem ker_twisted   : countKer true  256 = 8  := by decide
 theorem cob_subset_cocycles_untwisted : cobAreCocycles false 256 = true := by decide
 theorem cob_subset_cocycles_twisted   : cobAreCocycles true  256 = true := by decide
+
+/-! ## Is the twist really invisible? The braiding says no.
+
+    `twist_vanishes_on_reals` says σ has no consequence on ±1-valued SYMBOLS.
+    Circle Five's boson and fermion are both real, so the pentagon sector sees
+    nothing. But the seal also carries `Rs`, `hexLhs`, `hexRhs`, `hexagonHolds`,
+    `hexInvHolds` and `SelfInverse` — and `hexInvHolds f R = hexagonHolds f (conj R)`.
+    The seal already applies σ there. So: are the braidings real too? -/
+
+def Fs (f : GZ) (a b c d x y : Int) : GZ :=
+  if x = (a + b) % 2 ∧ y = (b + c) % 2 ∧ d = (a + b + c) % 2 then
+    (if a = 1 ∧ b = 1 ∧ c = 1 then f else GZ.one)
+  else GZ.zero
+
+def Rs (R : GZ) (x y : Int) : GZ := if x = 1 ∧ y = 1 then R else GZ.one
+
+def hexLhs (f R : GZ) (a b c d : Int) : GZ :=
+  let e := (a + b) % 2; let z := (a + c) % 2
+  GZ.mul (Rs R e c) (Fs f c a b d z e)
+
+def hexRhs (f R : GZ) (a b c d : Int) : GZ :=
+  let e := (a + b) % 2; let z := (a + c) % 2; let g := (b + c) % 2
+  GZ.mul (GZ.mul (GZ.mul (Fs f a b c d e g) (Rs R b c)) (Fs f a c b d z g)) (Rs R a c)
+
+/-- The seal's `hexagonHolds`, verbatim: Int labels, both label hypotheses. -/
+def hexagonHolds (f R : GZ) : Prop :=
+  ∀ a b c d : Int, (a = 0 ∨ a = 1) → (b = 0 ∨ b = 1) → (c = 0 ∨ c = 1) →
+    (d = 0 ∨ d = 1) → d = ((a + b) % 2 + c) % 2 → d = ((a + c) % 2 + b) % 2 →
+    hexLhs f R a b c d = hexRhs f R a b c d
+
+/-- The seal's `hexInvHolds`: the same plumbing read at the CONJUGATE braiding.
+    σ is already here, in the seal, applied to `R`. -/
+def hexInvHolds (f R : GZ) : Prop := hexagonHolds f (GZ.conj R)
+
+/-- The seal's `SelfInverse`: "the roomy edict — a braiding is its own inverse." -/
+def SelfInverse (R : GZ) : Prop := GZ.mul R R = GZ.one
+instance (R : GZ) : Decidable (SelfInverse R) := by unfold SelfInverse; infer_instance
+
+/-- Int labels restricted to {0,1} are exactly Bool labels through `lab`. -/
+theorem intBool (P : Int → Prop) :
+    (∀ i : Int, (i = 0 ∨ i = 1) → P i) ↔ (∀ b : Bool, P (lab b)) := by
+  constructor
+  · intro h b; cases b
+    · exact h 0 (Or.inl rfl)
+    · exact h 1 (Or.inr rfl)
+  · intro h i hi
+    rcases hi with rfl | rfl
+    · exact h false
+    · exact h true
+
+/-- Bool-quantified form of the seal's hexagon, so the kernel can enumerate it. -/
+def hexB (f R : GZ) : Bool :=
+  decide (∀ a b c d : Bool,
+    lab d = ((lab a + lab b) % 2 + lab c) % 2 →
+    lab d = ((lab a + lab c) % 2 + lab b) % 2 →
+    hexLhs f R (lab a) (lab b) (lab c) (lab d)
+      = hexRhs f R (lab a) (lab b) (lab c) (lab d))
+
+theorem hexagonHolds_iff (f R : GZ) : hexagonHolds f R ↔ hexB f R = true := by
+  constructor
+  · intro h
+    apply decide_eq_true
+    intro a b c d h1 h2
+    exact h _ _ _ _
+      (by cases a <;> first | exact Or.inl rfl | exact Or.inr rfl)
+      (by cases b <;> first | exact Or.inl rfl | exact Or.inr rfl)
+      (by cases c <;> first | exact Or.inl rfl | exact Or.inr rfl)
+      (by cases d <;> first | exact Or.inl rfl | exact Or.inr rfl) h1 h2
+  · intro hb a b c d ha hbb hc hd h1 h2
+    have h := of_decide_eq_true hb
+    rcases ha with rfl|rfl <;> rcases hbb with rfl|rfl <;> rcases hc with rfl|rfl <;>
+      rcases hd with rfl|rfl <;>
+      first
+        | exact h false false false false h1 h2 | exact h false false false true h1 h2
+        | exact h false false true false h1 h2  | exact h false false true true h1 h2
+        | exact h false true false false h1 h2  | exact h false true false true h1 h2
+        | exact h false true true false h1 h2   | exact h false true true true h1 h2
+        | exact h true false false false h1 h2  | exact h true false false true h1 h2
+        | exact h true false true false h1 h2   | exact h true false true true h1 h2
+        | exact h true true false false h1 h2   | exact h true true false true h1 h2
+        | exact h true true true false h1 h2    | exact h true true true true h1 h2
+
+/-! ### The answer: the boson braids REAL, the fermion braids IMAGINARY. -/
+
+theorem boson_braids_real :
+    hexB GZ.one ⟨1,0⟩ = true ∧ hexB GZ.one ⟨-1,0⟩ = true
+  ∧ hexB GZ.one ⟨0,1⟩ = false ∧ hexB GZ.one ⟨0,-1⟩ = false := by decide
+
+theorem fermion_braids_imaginary :
+    hexB ⟨-1,0⟩ ⟨0,1⟩ = true ∧ hexB ⟨-1,0⟩ ⟨0,-1⟩ = true
+  ∧ hexB ⟨-1,0⟩ ⟨1,0⟩ = false ∧ hexB ⟨-1,0⟩ ⟨-1,0⟩ = false := by decide
+
+/-- σ FIXES each of the boson's braidings. -/
+theorem sigma_fixes_boson_braidings :
+    GZ.conj ⟨1,0⟩ = (⟨1,0⟩ : GZ) ∧ GZ.conj ⟨-1,0⟩ = (⟨-1,0⟩ : GZ) := by decide
+
+/-- σ EXCHANGES the fermion's two braidings, with no fixed point. -/
+theorem sigma_swaps_fermion_braidings :
+    GZ.conj ⟨0,1⟩ = (⟨0,-1⟩ : GZ) ∧ GZ.conj ⟨0,-1⟩ = (⟨0,1⟩ : GZ)
+  ∧ GZ.conj ⟨0,1⟩ ≠ (⟨0,1⟩ : GZ) ∧ GZ.conj ⟨0,-1⟩ ≠ (⟨0,-1⟩ : GZ) := by decide
+
+/-- The roomy edict holds for the boson and FAILS for the fermion: i² = −1. -/
+theorem edict_boson : SelfInverse ⟨1,0⟩ ∧ SelfInverse ⟨-1,0⟩ := by decide
+theorem edict_fermion_fails : ¬ SelfInverse ⟨0,1⟩ ∧ ¬ SelfInverse ⟨0,-1⟩ := by decide

@@ -434,10 +434,19 @@ actually buys.*
 
 ## Round two: what the kernel now decides
 
-`lean/C6_Twist.lean` — Lean 4.22.0, no Mathlib, `EXIT=0`, **41 theorems, 40
-axiom-free, 1 on `propext`, 0 `sorryAx`, no `native_decide`** (`lean/AUDIT.txt`,
-one audit line per theorem, not a sample). Round one's Python is no longer the
-warrant for these:
+`lean/C6_Twist.lean` — Lean 4.22.0, no Mathlib, no imports, `EXIT=0`.
+**49 theorems; 100 declarations audited — theorems, defs and instances alike —
+and every one of them depends on NO axiom at all.** No `propext`, no
+`Classical.choice`, no `Quot.sound`, no `sorryAx`, no `native_decide`
+(`lean/AUDIT.txt`).
+
+The only decision point that is not an axiom is the two hand-written
+`Decidable` instances every `decide` routes through. They cannot lie: `isTrue`
+demands a proof term the kernel typechecks, and the only way to fake one is
+`sorry` or an axiom. Checked empirically — `isTrue (by sorry)` compiles but
+reports `sorryAx`; without `sorry` it does not compile at all.
+
+Round one's Python is no longer the warrant for these:
 
 | claim | round one | round two |
 |---|---|---|
@@ -461,11 +470,39 @@ unary recursion **aborts the kernel (SIGABRT) at 16384** — a stack failure, no
 a heartbeat failure, so raising `maxHeartbeats` does nothing. Binary splitting
 on a depth parameter clears it; depth 12 decides in 37s.
 
-`twist_vanishes_on_reals` is the one that explains the record rather than
-measuring it. Circle Five's boson and fermion are both ±1-valued, and on
-±1-valued symbols the two actions are *identically equal*. Five circles did not
-overlook the question. **The question had no visible consequence anywhere they
-looked**, and that is now a theorem rather than a story.
+### The correction that matters: "no visible consequence" was too strong
+
+Round two first wrote that `twist_vanishes_on_reals` explains the record —
+Circle Five's boson and fermion are both ±1-valued, on ±1-valued symbols the two
+actions are *identically equal*, so **the question had no visible consequence
+anywhere they looked.**
+
+That last clause is wrong, and the kernel says so. It is only true of the
+**pentagon sector**. The seal also carries `Rs`, `hexLhs`, `hexRhs`,
+`hexagonHolds`, `hexInvHolds` and `SelfInverse` — and σ is *already written
+there*: `hexInvHolds f R = hexagonHolds f (conj R)`.
+
+| | braidings `R` admitted | σ acts | `SelfInverse` |
+|---|---|---|---|
+| boson (`f = 1`) | `1`, `-1` — **real** | fixes each | holds for both |
+| fermion (`f = -1`) | `i`, `-i` — **imaginary** | **exchanges them, no fixed point** | **fails** — `i² = -1` |
+
+`boson_braids_real`, `fermion_braids_imaginary`, `sigma_fixes_boson_braidings`,
+`sigma_swaps_fermion_braidings`, `edict_boson`, `edict_fermion_fails` — all
+kernel-decided, with `hexagonHolds_iff` bridging the seal's Int-label statement
+to the enumerated form so these are about the seal's hexagon and not a model of it.
+
+So the honest statement is not that the consequence was invisible. It is:
+
+> **σ is invisible in the pentagon sector and visibly a chirality swap in the
+> braiding sector, and the seal's classification is defined so that only the
+> first sector is looked at.** `IsClassifiedSymbol` is *unit-valued + pentagon*.
+> The hexagon is not in it.
+
+The consequence was always visible in the ordinary place one looks for it —
+complex conjugation exchanging a theory with its mirror. It was outside what got
+classified, not outside what was observable. That is a considerably worse
+finding for the record than "nobody asked," and it is the one that survives.
 
 ## Standing beside the counter-prover
 
