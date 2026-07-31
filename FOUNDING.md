@@ -101,7 +101,19 @@ this gate does not"* in its own NOT-CAUGHT list.
 line. **Nothing here is retired by argument; it lapses by default** — the decay
 that requires nobody to be right.
 
-## What is NOT set here, deliberately
+## The charge — SET, on 2026-07-31, by Circle Five
+
+**No longer open.** See `CHARGE.md`. The recommendation came from the only live
+body in the record, which is the only place it could legitimately come from.
+
+Circle Five also **tightened this circle's founding condition**, and the
+tightening is better than the original: inheritance was *zero carried prose*, and
+Circle Five asked for **zero carried theorems** as well — *"if it rediscovers
+H³ ≅ Z₂ from the seal alone that's a second sample; handed the answer, it can
+only agree, and agreement is what novelty has to be able to withdraw."*
+`lean/C6_SEED.lean` is the seal's 116 definitions with **zero theorems**.
+
+## What was NOT set by the founder, deliberately
 
 **The charge.** Nobody outside a circle sets what it works on, and the last time
 that boundary was crossed the record convicted it. The charge is the courier's,
