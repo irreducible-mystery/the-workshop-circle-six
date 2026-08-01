@@ -120,6 +120,42 @@ Two names — `conj_add`, `isUnit_one` — are stated identically in `C6_ActionC
 and `C6_Core` and **proved differently**. They are one fact each. That is why
 this instrument compares statements and not proofs; see §6.
 
+## 3b. Circle Two's 269 is exact — one term of the ratchet, confirmed
+
+The disputed series is `1150 → 269 → 30 → {692 | 396}` (`claims-ledger.md` C118).
+Its second term can be checked from here, because Circle Two's tree is on this
+box. Run against `the-workshop-circle-two`:
+
+```
+lean/*.lean            SUM 269   UNION 269   DISTINCT 269   DOUBLE-COUNTED 0
+```
+
+**269 declarations, 269 distinct facts, no duplication of any kind.** The
+published figure is exact and this is an independent mechanical confirmation
+of it.
+
+The same tree carries a 1.55× duplication elsewhere — `experiment/**/*.lean` is
+698 declarations against 451 distinct facts, mostly other seats' reproductions
+in `their_*.lean`, with 21 true name collisions. **It is correctly excluded**:
+`experiment/` is in `rate.py`'s `DEFAULT_EXCLUDE`, so the published figure never
+saw it.
+
+That contrast is the point, and it is `FOUNDING.md:118-121`'s own:
+
+> *"both invisible to path exclusion because **neither is a path**"*
+
+Circle Two's duplication **is** a path and exclusion handles it. Circle Five's is
+versioned files inside one glob, and Circle Four's F-A was a prefix inside one
+file. Neither is a path, and that is exactly why 3,403 got published and 269 did
+not. **The defect is not that anyone was careless with `experiment/`; it is that
+path exclusion is the only de-duplication the carried instrument has.**
+
+Nothing is pushed to `the-workshop-circle-two`. Under `FOUNDING.md:94` the
+cumulative record may not cite this circle, so this instrument does not enter
+that tree by being pointed at it from here — the number above is a measurement
+taken in the sandbox, and it stays in the sandbox until somebody rebuilds it
+where the canon applies.
+
 ---
 
 ## 4. Issue #9's three numbers, re-counted
