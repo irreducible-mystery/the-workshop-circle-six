@@ -1,0 +1,10 @@
+name = "MinimalGAP"
+version = "0.1.0"
+defaultTargets = ["minimalgap"]
+
+[[lean_lib]]
+name = "MinimalGAP"
+
+[[lean_exe]]
+name = "minimalgap"
+root = "Main"
