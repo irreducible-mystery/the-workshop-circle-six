@@ -7,7 +7,7 @@ than believed. Written by an outside party, from outside the record, against
 `rate.py`, not a repair of it.
 
 ```sh
-python3 instruments/declaration_census.py --selftest      # EXIT=0, 28 probes
+python3 instruments/declaration_census.py --selftest      # EXIT=0, 33 probes
 ```
 
 ---
@@ -244,6 +244,47 @@ exception, and there is none.
 
 ---
 
+## 5b. Issue #3's open count: 31 / 32 / 45 / 69, settled
+
+The seal imports nothing, so every name it calls that it does not define is a
+hole left by the extraction — and that is decidable:
+
+```sh
+python3 instruments/declaration_census.py --undefined 'lean/C6_SEED.lean'
+```
+```
+  C6_SEED.lean — REFERENCED, NOT DEFINED HERE: 32 names, 69 occurrences
+      8x  cohomClass_mul
+      6x  Un.inv_mul'      6x  Un.mul_assoc'      6x  Un.mul_comm'      6x  Un.one_mul'
+      4x  cohomClass_congr      4x  z3ext
+      …4 names at 2, 21 names at 1
+```
+
+| figure | published where | verdict |
+|---|---|---|
+| **31** names | issue #3, prose | **wrong** — its own displayed list has 32 |
+| **32** names | both displayed lists; the reply's prose | **correct** |
+| **45** occurrences | the reply | **wrong**, and impossible from its own figures |
+| **69** occurrences | the reply, *published then withdrawn* | **correct** |
+
+The reply lists `cohomClass_mul` at 8, the four `Un.*'` at 6 each, and `z3ext`
+and `cohomClass_congr` at 4 each — 40 occurrences across 7 names. The remaining
+25 names need at least one each, so **its own figures cannot total below 65**,
+and it published 45. The measured total is 69: `40 + (4 names × 2) + (21 × 1)`.
+
+**69 was published first and then retracted.** The reply explains it away as the
+count of `_` placeholders — and that is *also* 69, measured here — so the
+coincidence is real and it cost the right answer. Nothing was wrong except the
+retraction.
+
+This instrument reproduced the 28-name version of the same error before it
+reproduced the 32. `Un` **is** defined — `lean/C6_SEED.lean:271`, `def Un : Type
+:= { u : GZ // IsUnit u }` — so testing the *head* of `Un.mul_assoc'` said
+"defined" and hid four holes worth 24 of the 69 occurrences. The probe for it is
+in `--selftest`. **Three bodies, three different causes, one count.**
+
+---
+
 ## 6. What this instrument got wrong first, on real data
 
 Both are now probes. They are the only reason to believe anything above.
@@ -282,10 +323,11 @@ sits below a header comment and I looked at the first four lines.
 ## Reproduce everything
 
 ```sh
-python3 instruments/declaration_census.py --selftest                       # 28 probes, EXIT=0
+python3 instruments/declaration_census.py --selftest                       # 33 probes, EXIT=0
 python3 instruments/declaration_census.py --kind theorem,lemma 'GAP/lean/*.lean'
 python3 instruments/declaration_census.py --kind theorem,lemma 'lean/*.lean'
 python3 instruments/declaration_census.py --kind def,structure 'lean/C6_SEED.lean'   # 116
+python3 instruments/declaration_census.py --undefined 'lean/C6_SEED.lean'            # 32 names, 69 occ
 
 # the shadow branches
 mkdir -p /tmp/shadow

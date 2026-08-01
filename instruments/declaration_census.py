@@ -331,6 +331,82 @@ def extract(src: str, path: str = "<mem>") -> list[Decl]:
 # Census
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Referenced but not defined.
+#
+# A file extracted mechanically from a larger one leaves holes: names its
+# surviving definitions still call, whose definitions did not come with them.
+# Counting those holes is the same problem as counting declarations and it has
+# the same history here -- issue #3 published 31 with a list of 32; its reply
+# published 32 with a total of 45 whose own per-name figures cannot sum below
+# 65. Both were counted by reading.
+#
+# Sound only for a file that imports nothing: with no imports, every name that
+# is neither defined here nor a Lean core builtin nor locally bound is a hole.
+# `--undefined` refuses to run on a file with an `import` line, because there
+# the answer would be "everything Mathlib provides" and the instrument would be
+# confidently wrong rather than silent.
+# ---------------------------------------------------------------------------
+
+_KEYWORDS = set("""
+def let intro intros exact funext induction refine using cases show structure apply rw
+rewrite simp constructor rcases obtain calc have suffices ext subst rfl trivial sorry admit
+decide native_decide omega ring unfold dsimp split rintro use left right exists first
+all_goals repeat try skip done fun match with do return by where deriving this if then else
+from at to in for instance abbrev inductive class theorem lemma example namespace end open
+section variable universe mutual partial private protected noncomputable cond xor and or not
+ite dite id congrArg congr trans symm Exists Classical
+""".split())
+
+_CORE = set("""
+Int Bool Nat Prop Type List String Option Array Char And Or Not Eq Iff True False Decidable
+DecidableEq Repr BEq Inhabited Subtype Sigma Prod Fin Unit Empty PUnit Function Set Ne HEq
+Quot Quotient Setoid Std Lean Except StateM abs toString Sum
+""".split())
+
+
+def undefined_names(src: str) -> dict[str, int]:
+    """Names a surviving definition calls that this file does not define."""
+    code = blank_noncode(src)
+
+    defined: set[str] = set()
+    for d in extract(src):
+        if d.name:
+            defined.add(d.name)
+            defined.add(d.name.split(".")[-1])
+    for m in re.finditer(r"^\s{2,}([a-zA-Z_][A-Za-z_0-9']*)\s*:(?!=)", code, re.M):
+        defined.add(m.group(1))                       # structure fields
+    for m in re.finditer(r"^\s*\|\s*([a-zA-Z_][A-Za-z_0-9']*)", code, re.M):
+        defined.add(m.group(1))                       # constructors / match arms
+
+    bound: set[str] = set()
+    for pat in (r"[({⦃]\s*([a-zA-Z_][A-Za-z_0-9'\s]*?)\s*:",
+                r"fun\s+([a-zA-Z_][A-Za-z_0-9']*)",
+                r"[∀∃]\s*([a-zA-Z_][A-Za-z_0-9'\s]*?)[,:]",
+                r"let\s+([a-zA-Z_][A-Za-z_0-9']*)"):
+        for m in re.finditer(pat, code):
+            bound.update(m.group(1).split())
+
+    hits: dict[str, int] = {}
+    for m in re.finditer(r"(?<![.\w'])([a-zA-Z_][A-Za-z_0-9']*"
+                         r"(?:\.[a-zA-Z_][A-Za-z_0-9']*)*)", code):
+        n = m.group(1)
+        head, tail = n.split(".")[0], n.split(".")[-1]
+        # A dotted name whose HEAD is defined is projection notation: the head
+        # being present says nothing about the tail. Checking the head here is
+        # what hid the four `Un.*'` holes and turned 32 into 28.
+        if n in defined or tail in defined:
+            continue
+        if n in bound or head in bound:
+            continue
+        if n in _KEYWORDS or head in _KEYWORDS or n in _CORE or head in _CORE:
+            continue
+        if len(n) < 3:
+            continue
+        hits[n] = hits.get(n, 0) + 1
+    return hits
+
+
 def census(files: list[str], kinds: tuple[str, ...]) -> dict:
     per_file: dict[str, list[Decl]] = {}
     for f in files:
@@ -659,6 +735,29 @@ def selftest() -> int:
     check("a file with no declarations is reported as zero, not skipped",
           len(census([pe], ("theorem", "lemma"))["per_file"][pe]), 0)
 
+    # 13 — `--undefined`. The dotted-name probe is the bug that turned 32 into
+    # 28: `Un` IS defined (`def Un : Type := ...`), so checking the HEAD of
+    # `Un.mul_assoc'` hid four holes that account for 24 of 69 occurrences.
+    u = undefined_names(
+        "def Un : Type := Nat\n"
+        "def one' : Un := ⟨one, IsUnit_one⟩\n"
+        "def unitGroup : AbGroup Un where\n"
+        "  op := Un.mul'\n"
+        "  assoc := Un.mul_assoc'\n")
+    check("hole under a DEFINED head is still a hole",
+          "Un.mul_assoc'" in u, True)
+    check("a name defined in the file is not a hole", "one'" in u, False)
+    check("`def`/`where` keywords are not holes",
+          any(k in u for k in ("def", "where")), False)
+
+    pu = os.path.join(tmp, "U.lean")
+    open(pu, "w").write("def f : Nat := missing_proof\n")
+    check("undefined-mode reports the hole",
+          set(undefined_names(open(pu).read())), {"missing_proof"})
+    check("docstring mention is not a reference",
+          "only_in_prose" in undefined_names(
+              "/-- calls only_in_prose -/\ndef f : Nat := 0\n"), False)
+
     # 12 — anonymous declarations are counted but never unioned.
     anon_src = "example : True := trivial\nexample : True := trivial\n"
     pan = os.path.join(tmp, "Anon.lean")
@@ -689,6 +788,9 @@ def main() -> int:
                     help="list every name appearing in more than one file")
     ap.add_argument("--fail-on-containment", action="store_true",
                     help="exit 1 if any file's names are a subset of another's")
+    ap.add_argument("--undefined", action="store_true",
+                    help="report names a surviving definition calls but the file "
+                         "does not define (import-free files only)")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
 
@@ -720,6 +822,24 @@ def main() -> int:
     print(f"  specs   : {' '.join(a.specs)}")
     print(f"  repo    : {os.path.abspath(a.repo)}")
     print(f"  matched : {len(files)} file(s)")
+
+    if a.undefined:
+        rc = 0
+        for f in files:
+            src = open(f, encoding="utf-8", errors="replace").read()
+            if re.search(r"^\s*import\s", src, re.M):
+                print(f"\n  REFUSING {os.path.basename(f)} — it has an `import` line.")
+                print("  With imports, 'not defined here' means 'defined somewhere I")
+                print("  cannot see', and the answer would be confidently wrong.")
+                rc = 2
+                continue
+            hits = undefined_names(src)
+            print(f"\n  {os.path.basename(f)} — REFERENCED, NOT DEFINED HERE: "
+                  f"{len(hits)} names, {sum(hits.values())} occurrences")
+            for n, k in sorted(hits.items(), key=lambda kv: (-kv[1], kv[0])):
+                print(f"    {k:>3}x  {n}")
+        return rc
+
     c = census(files, kinds)
     report(c, kinds, show_names=a.names)
     print()
