@@ -1151,3 +1151,129 @@ theorem controls_are_blind_to_the_substitution :
 theorem passing_controls_does_not_make_an_inverse :
     PassesMirrorControls conj ∧ mul onePlusI (conj onePlusI) ≠ one :=
   ⟨conj_passesControls, by decide⟩
+
+/-! ############################################################################
+    AXIOM AUDIT — appended by the counter-prover.
+
+    This file shipped WITHOUT one, unlike C6_ActionA.lean which carries 88
+    `#print axioms` lines for 88 theorems.  Its header claims the discipline
+    ("no sorry, no admit, no axiom, no native_decide") and then does not
+    mechanically check it.  A claimed discipline that is not exercised is the
+    same species as rate.py's self-test, which passes lean_spec=None in all
+    three probes and so never exercises the column it is trusted for.
+
+    Every theorem in this file, not a curated sample.  `sorryAx` must not
+    appear.  Result at the time of appending: 110 theorems audited, 0 sorryAx,
+    39 axiom-free, 71 depending only on Lean's standard propext /
+    Classical.choice / Quot.sound.
+    ############################################################################ -/
+#print axioms GZ
+#print axioms band_left
+#print axioms band_right
+#print axioms allBool_sound
+#print axioms allBool_complete
+#print axioms lab_isLabel
+#print axioms exists_bool_of_isLabel
+#print axioms gz_mul_comm
+#print axioms gz_mul_assoc
+#print axioms gz_one_mul
+#print axioms gz_mul_one
+#print axioms conj_mul
+#print axioms conj_add
+#print axioms conj_one
+#print axioms conj_conj
+#print axioms mul_conj_eq_norm
+#print axioms norm_mul
+#print axioms norm_conj
+#print axioms norm_nonneg
+#print axioms sq_nonneg
+#print axioms bound_of_sq_le_one
+#print axioms unit_is_four
+#print axioms isUnit_of_mul_conj
+#print axioms isUnit_iff_norm_one
+#print axioms mul_conj_of_isUnit
+#print axioms isUnit_mul
+#print axioms isUnit_conj
+#print axioms isUnit_one
+#print axioms inv_unique
+#print axioms inv_eq_conj_of_isUnit
+#print axioms act_isUnit
+#print axioms agreeOK_sound
+#print axioms agreeOK_complete
+#print axioms not_agreeOnLabels_of_false
+#print axioms d2raw_isUnit
+#print axioms d2sig_isUnit
+#print axioms gPlusI_norm
+#print axioms gPlusI_not_isUnit
+#print axioms gaugePhi_gPlusI
+#print axioms four_not_isUnit
+#print axioms gaugePhi_gPlusI_not_unit_raw_coboundary
+#print axioms gaugePhi_gPlusI_not_unit_sig_coboundary
+#print axioms gz_rearrange
+#print axioms gaugePhi_eq_d2raw_gaugeInv
+#print axioms gaugePhi_gPlusI_is_raw_coboundary
+#print axioms hSig_norm
+#print axioms hSig_not_isUnit
+#print axioms gaugePhi_gPlusI_is_sig_coboundary
+#print axioms sig_witness_value
+#print axioms gaugeInv_gPlusI_fails_sig
+#print axioms gaugeComp_assoc
+#print axioms gaugeComp_comm
+#print axioms gaugeTrivial_left_unit
+#print axioms gaugeComp_gaugeInv
+#print axioms gaugeComp_gaugeInv_gPlusI
+#print axioms gaugeInv_not_inverse
+#print axioms mul_conj_eq_one_iff_isUnit
+#print axioms gaugeInv_isInverse_iff
+#print axioms gaugeInv_isInverse_iff_norm
+#print axioms gaugeTrivial_isUnit
+#print axioms gaugeInv_isInverse_at_trivial
+#print axioms gPlusI_outside
+#print axioms hexOK_sound
+#print axioms hexagon_at_one_one
+#print axioms hexInv_at_one_one
+#print axioms hexagon_one_forces_sq
+#print axioms hexInv_iff_hexAtInverses_of_isUnit
+#print axioms onePlusI_norm
+#print axioms onePlusI_has_no_inverse
+#print axioms hexAtInverses_onePlusI
+#print axioms hexInv_fails_onePlusI
+#print axioms hexInv_is_not_hexAtInverses
+#print axioms onePlusI_conj_not_inverse
+#print axioms gaugePhiWith_conj
+#print axioms gaugeActWith_conj
+#print axioms gaugeEquivWith_conj
+#print axioms conj_invertsUnits
+#print axioms invertsUnits_agree
+#print axioms invertsUnits_eq_conj
+#print axioms gaugePhiWith_eq_gaugePhi_of_units
+#print axioms gaugeActWith_eq_gaugeAct_of_units
+#print axioms gaugeEquivWith_iff_gaugeEquivOnLabels
+#print axioms gaugeInvWith_eq_gaugeInv_of_units
+#print axioms sigmaAlt_invertsUnits
+#print axioms sigmaAlt_ne_conj_at_onePlusI
+#print axioms gaugePhiWith_sigmaAlt_gPlusI
+#print axioms gaugePhi_ne_gaugePhiWith_sigmaAlt
+#print axioms readings_differ_off_units
+#print axioms gaugeAct_readings_differ
+#print axioms reading_C_headline
+#print axioms gaugeAct_trivial
+#print axioms gaugeEquivOnLabels_refl
+#print axioms gaugeEquivWith_inhabited
+#print axioms mirrorRS_id
+#print axioms mirrorRS_conj
+#print axioms mirrorRS_fakeMirror
+#print axioms mirrorRS_add
+#print axioms mirrorRS_re
+#print axioms mirrorRS_mul_iff
+#print axioms multiplicative_mirrors_are_exactly_two
+#print axioms fakeMirror_witness
+#print axioms fakeMirror_not_mul
+#print axioms fakeMirror_fails_by_characterisation
+#print axioms conj_add
+#print axioms conj_passesControls
+#print axioms fakeMirror_failsControls
+#print axioms conj_and_fakeMirror_separate
+#print axioms sigmaAlt_failsControls
+#print axioms controls_are_blind_to_the_substitution
+#print axioms passing_controls_does_not_make_an_inverse
