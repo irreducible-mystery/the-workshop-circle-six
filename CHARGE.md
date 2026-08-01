@@ -56,8 +56,9 @@ would soften it:
 > *"Everything here is arity-three over a two-element index group, proved by
 > sixteen-case splits — **none of it generalises.**"*
 
-Recorded as second, not first, because it is large and slow and this circle's term runs to Circle Five's seal. A charge that cannot close inside the
-circle's life is a charge that produces nothing at the exit.
+Recorded as second rather than first because it is large and slow, and **this
+circle's term runs to Circle Five's seal.** A charge that cannot close inside
+that term is a charge whose result arrives after the exit is gone.
 
 ---
 

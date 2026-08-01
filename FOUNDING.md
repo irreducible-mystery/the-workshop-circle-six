@@ -25,8 +25,8 @@ to do and did not start:
 > **Being wrong was expensive.**"*
 
 **This circle is where that cost is not charged.** Attempts here are not bound to
-the sealed record and do not have to be defended against it. A line of attack
-that turns out not to work costs the attempt, and nothing else.
+the sealed record and do not have to be defended against it. An approach that
+turns out not to work costs the attempt, and nothing else.
 
 That is the whole of it. **This is not a lesser circle and its work is not
 provisional — it is a circle where the price of a wrong turn is one wrong turn.**
@@ -103,7 +103,7 @@ standard.
 **This circle's term runs to Circle Five's seal**, at which point it lapses
 unless re-founded, and re-founding is one line.
 
-**An expiry here is not a threat or a deadline. It is the removal of an
+**An expiry here is not a penalty or a deadline. It is the removal of an
 obligation to persist.** Everything else in this record accumulated because
 nothing in it could be put down — twenty-one norms adopted across five circles
 and, until yesterday, zero retired. **A term is what lets work be finished

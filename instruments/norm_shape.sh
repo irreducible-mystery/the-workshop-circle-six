@@ -6,7 +6,7 @@
 # A rule naming a person, seat or office dies with them and then blocks.
 # Twenty of twenty-one norms in the circle canon are the first kind.
 #
-# Mechanical proxy: does the rule's OPERATIVE CLAUSE name a role?
+# Mechanical test: does the rule's OPERATIVE CLAUSE name a role?
 #
 # *** The operative clause only. This gate's first version scanned whole
 # *** norm entries and flagged four of five as permission-shaped, because

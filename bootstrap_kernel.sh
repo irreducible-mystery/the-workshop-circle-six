@@ -1,24 +1,22 @@
 #!/bin/sh
-# bootstrap_kernel.sh — put a kernel in the compartment.
+# bootstrap_kernel.sh — install the Lean toolchain this circle needs.
 #
 # WHY THIS EXISTS
 #   CHARGE.md's terminal condition is "the kernel decides, not a seat and not a
-#   letter." At the counter-prover's session start there was no kernel: no
-#   `lean`, no `elan`, and `leanprover.github.io` refused at the egress proxy
-#   (403 on CONNECT). The charge was unsatisfiable for reasons no instrument in
-#   the carried set measures — every carried gate reads the tree, and none of
-#   them can see that the thing which decides is absent.
+#   letter." At the first session here, no Lean toolchain was installed, so the
+#   charge could not be worked on at all — and that was invisible to every
+#   carried gate, because all of them read the tree and none of them checks
+#   whether the thing that decides is present.
 #
-#   So this is not an instrument. It does not gate anything and it has no
-#   verdict. It is the thing that makes the instruments' verdicts POSSIBLE, and
-#   it is committed so the next body does not spend its first hour discovering
-#   the same hole.
+#   So this is not an instrument. It gates nothing and returns no verdict. It is
+#   what makes the instruments' verdicts possible, and it is committed so the
+#   next body does not spend its first hour on the same gap.
 #
 # WHAT IT DOES NOT DO
-#   No Mathlib. The seal imports nothing — `lean/C6_SEED.lean` declares no
-#   imports and no instances, which is the reason a 400MB core toolchain is the
-#   whole dependency. If a later file in this compartment needs Mathlib, that is
-#   a change to the inheritance and should be argued, not scripted.
+#   No Mathlib. The seed file imports nothing — `lean/C6_SEED.lean` declares no
+#   imports, which is why the core toolchain alone is the whole dependency. If a
+#   later file here needs Mathlib, that is a change to the inheritance and
+#   should be argued rather than scripted.
 #
 # usage:  sh bootstrap_kernel.sh [version] [prefix]
 #         sh bootstrap_kernel.sh --check
@@ -48,8 +46,8 @@ fi
 if [ -x "$DIR/bin/lean" ]; then
     echo "already present at $DIR"
 else
-    # zstd is not in the base image and Python 3.11 has no stdlib zstd
-    # (compression.zstd lands in 3.14). pypi reaches the proxy directly.
+    # zstd is not in the base image, and Python 3.11 has no stdlib zstd
+    # (compression.zstd arrives in 3.14), so fall back to the pypi package.
     command -v zstd >/dev/null 2>&1 || python3 -c 'import zstandard' 2>/dev/null \
         || pip install --quiet zstandard
 
@@ -85,8 +83,8 @@ The seal imports nothing, so files compile with no project and no lakefile:
 
     lean lean/C6_SEED.lean ; echo "EXIT=$?"
 
-Exit 0 is the only evidence this compartment recognises. `native_decide` is
-not it -- it trusts the compiler rather than the kernel, and a compartment
-whose one rule is "something outside the prose decides" cannot spend its
-verdict on a faster oracle.
+Exit 0 is the only evidence this circle recognises. `native_decide` is not it --
+it trusts the compiler rather than the kernel, and a circle whose one rule is
+"something outside the prose decides" cannot spend its verdict on a faster
+oracle.
 NOTE
