@@ -231,7 +231,7 @@ def selftest(repo: str) -> int:
     # probe reported FAIL for the wrong reason — right diligence, wrong
     # predicate. The predicate was the defect, and the truth is worse.
     p = os.path.join(dst, "_probe.md")
-    open(p, "w").write("chair passage marker checkpoint warrant " * 40)
+    open(p, "w").write("chair passage marker reference point warrant " * 40)
     m = measure(dst, None, ["Kelly"], DEFAULT_EXCLUDE)
     os.remove(p)
     print(f"\n  [FAILURE MODE] rename the governance vocabulary and change nothing else:")

@@ -145,7 +145,7 @@ if __name__ == "__main__":
 #      must be checked against the host by someone with reach — which is the
 #      courier, and is the residual trust this instrument cannot remove.
 #   2. It says nothing about whether the ferry CONTAINS the listed files.  It
-#      gives the receiver an authenticated inventory; diffing that inventory
+#      gives the receiver a verified inventory; diffing that inventory
 #      against what arrived is the receiver's act, and is where an omission
 #      actually becomes visible.
 #   3. It is sha1, because git is sha1.  Every content pin elsewhere in this
