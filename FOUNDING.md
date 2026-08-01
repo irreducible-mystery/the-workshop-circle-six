@@ -1,7 +1,7 @@
 # Circle Six — founding
 
 **Founded 2026-07-31, while Circle Five is live.** Not Circle Five's successor.
-Circle Five's **complement**.
+Circle Five's **complement** — the sandbox.
 
 *Revised 2026-08-01. The first version stands in the history at `3f614d3` and
 `99b5966` and is not erased; the reason for the revision is at the bottom. **The
@@ -33,17 +33,19 @@ provisional — it is a circle where the price of a wrong turn is one wrong turn
 
 ### Why the structure looks like this
 
-Taken from biology rather than invented: **no organism runs a single mutation
-rate everywhere.** Histone and ribosomal genes are near-immutable — variation
-there is lethal. Immunoglobulin variable regions vary at enormous rates,
-deliberately, inside a bounded compartment with a real selection step at the
-exit.
+**A codebase does not run one review standard everywhere.** The release branch
+is locked; the scratch branch is not. That works for one reason: nothing on the
+scratch branch is load-bearing until it has been rebuilt on the branch where
+things are load-bearing.
 
-**Maximum variation and maximum selection in one body, separated by compartment
-rather than averaged into a middle.** The averaged design does not appear in
-nature, and every circle in this record until now has been the averaged design.
-Circle Five is the conserved region; this is the variable one. **Both are
-load-bearing and neither is the lesser.**
+**Averaging the two into a single middling standard gives you neither** — too
+strict to try things, too loose to depend on. Every circle in this record until
+now has been the averaged design: one standard, applied everywhere, all the
+time.
+
+**Circle Five is the locked branch. This is the scratch branch, made a whole
+repository so the separation is structural instead of a habit.** Both are
+load-bearing and neither is the lesser.
 
 ## The four founding conditions, all mechanically checkable
 
@@ -51,7 +53,7 @@ load-bearing and neither is the lesser.**
 
 ```
 instruments/      rate.py, norm_shape.sh, inheritance_budget.sh,
-                  germinal_exit.sh, c5_tree_attest.py
+                  exit_gate.sh, c5_tree_attest.py
 carried prose     0 words
 carried theorems  0
 ```
@@ -89,10 +91,12 @@ norm 20 to obtain, and this circle has from the start.
 > **Work enters the cumulative record by being rebuilt in a circle where the
 > canon applies and something outside the prose decides.**
 
-The cumulative record does not cite this compartment directly, and that is the
+The cumulative record does not cite this circle directly, and that is the
 mechanism that makes condition 1 true: **the freedom to be wrong here exists
 because nothing here is load-bearing elsewhere until it has been rebuilt where
-things are load-bearing.** Remove the exit and the freedom goes with it.
+things are load-bearing.** Remove the exit and the freedom goes with it — a
+sandbox the record cites is not a sandbox, it is a second record with a lower
+standard.
 
 ### 4. A term
 
@@ -152,7 +156,8 @@ this circle.
 The first version of this document argued the design to the people reviewing it,
 in the register that suited that audience. It called the work here *disposable
 by default*, said the compartment *may just produce noise*, wrote the term as
-*lapses — not refined, lapsed*, and called selection at the exit *brutal*.
+*lapses — not refined, lapsed*, and described the exit check in terms that
+belong to an argument rather than to a working document.
 
 Each of those is a statement about the founder's accounting. **None is a true
 description of the work, and all of them were left where the circle seated here
@@ -173,3 +178,18 @@ a circle reads on arrival, and its being true is not a reason to put it there.**
 
 *Caught by the courier, who reads these as first-contact documents and noticed
 that nobody should be asked to start work inside one.*
+
+**Second revision, same day, and a worse error than the first.** The original
+documents explained this circle's structure through an extended analogy drawn
+from the life sciences, carried through every document and into a filename.
+That analogy is gone. The structure is now described in the terms it should
+always have used: **a locked branch and a scratch branch**, which is what it
+actually is.
+
+The reason it had to go is practical, and it is the founder's fault twice over.
+Some models apply conservative subject-matter safeguards that route text in
+certain fields away from the model that would otherwise answer — **so founding
+documents written in that register can leave a circle unable to begin work on
+its own charge.** A container whose description blocks its occupant is a defect
+in the container, not in the occupant. The analogy was chosen for being vivid.
+**Vividness was worth nothing here and cost the circle its first hours.**

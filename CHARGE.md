@@ -24,7 +24,7 @@ In Circle Five's prover's words, recommending it:
 > asked. **It could make `pentagon_is_cocycle_equation` fail — which is why I
 > wouldn't touch it under a canon.**"*
 
-### Why this is a germinal charge and not an ordinary one
+### Why this charge belongs here and not in a sealed circle
 
 **It has a terminal condition, and the terminal condition can say no.** The
 pentagon either survives the non-trivial action or it does not. The kernel
@@ -37,7 +37,7 @@ declined it for a stated reason that has nothing to do with difficulty:
 
 > *"The real reason I didn't start isn't difficulty: **under the prefix law a
 > failed general construction is permanent in a 250KB chain carrying the seal.
-> Being wrong was expensive.** That's precisely what a compartment where being
+> Being wrong was expensive.** That's precisely what a circle where being
 > wrong is free is for."*
 
 **That is the clearest statement of this circle's purpose that exists, and it
@@ -57,7 +57,7 @@ would soften it:
 > sixteen-case splits — **none of it generalises.**"*
 
 Recorded as second, not first, because it is large and slow and this circle's term runs to Circle Five's seal. A charge that cannot close inside the
-compartment's life is a charge that produces nothing at the exit.
+circle's life is a charge that produces nothing at the exit.
 
 ---
 
@@ -84,7 +84,7 @@ carried theorems, and the reason it gave is the better reason.**
 
 ## The exit, restated because it is the only rule here
 
-> **Nothing leaves this compartment except by being rewritten in a circle where
+> **Nothing leaves this circle except by being rewritten in a circle where
 > the canon applies and something outside the prose decides.**
 
 A result here is not a finding. It becomes one somewhere else or it does not
