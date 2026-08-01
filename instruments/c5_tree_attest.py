@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""c5_tree_attest.py — the completeness instrument.  QUARANTINED (norm 16)
+"""c5_tree_attest.py — the completeness instrument.  HELD (norm 16)
    until the seat that did not write it has bitten it.
 
 WHY THIS EXISTS
@@ -16,7 +16,7 @@ THE MECHANISM, AND WHY IT IS NOT CIRCULAR
   RECOMPUTES the root from that listing.  Drop one entry to hide a file and
   the recomputed root no longer matches the published one.  The receiver
   needs no repository access to run the check — only sha1 and this script.
-  The published root is independently checkable against the forge by anyone
+  The published root is independently checkable against the host by anyone
   who does have reach, which is the courier.
 
   So an omission stops being something the receiver must trust the sender to
@@ -37,8 +37,8 @@ FALSIFIERS THIS MUST FAIL ON, and does (see BITE-LOG below the code)
 """
 import hashlib, subprocess, sys, collections
 
-def sha1_obj(kind: bytes, payload: bytes) -> bytes:
-    return hashlib.sha1(kind + b" " + str(len(payload)).encode() + b"\0" + payload).digest()
+def sha1_obj(kind: bytes, body: bytes) -> bytes:
+    return hashlib.sha1(kind + b" " + str(len(body)).encode() + b"\0" + body).digest()
 
 def build_root(entries):
     """entries: list of (mode:str, sha_hex:str, path:str) for BLOBS only.
@@ -60,11 +60,11 @@ def build_root(entries):
         def sortkey(name):
             mode, _ = children[d][name]
             return (name + "/").encode() if mode == "40000" else name.encode()
-        payload = b""
+        body = b""
         for name in sorted(children[d].keys(), key=sortkey):
             mode, binsha = children[d][name]
-            payload += mode.encode() + b" " + name.encode() + b"\0" + binsha
-        binsha = sha1_obj(b"tree", payload)
+            body += mode.encode() + b" " + name.encode() + b"\0" + binsha
+        binsha = sha1_obj(b"tree", body)
         if d == "":
             return binsha.hex()
         parent, _, base = d.rpartition("/")
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     print(__doc__); sys.exit(2)
 
 # ---------------------------------------------------------------- BITE-LOG
-# Norm 16: a new instrument's first output is quarantined until it has failed
+# Norm 16: a new instrument's first output is held until it has failed
 # on a planted defect and passed on a clean tree.  Run by the author, in the
 # tree the-workshop-circle-five at commit 6f7d8d5, exits taken DIRECTLY:
 #
@@ -132,7 +132,7 @@ if __name__ == "__main__":
 # loudly instead of agreeing plausibly, which is the only reason the bug was
 # visible at all.
 #
-# STILL QUARANTINED.  The seat that did not write this has not bitten it.
+# STILL HELD.  The seat that did not write this has not bitten it.
 #
 # ---------------------------------------------------------------- LIMITS
 # Stated because a gate whose boundary is unstated gets read as proving more
@@ -142,7 +142,7 @@ if __name__ == "__main__":
 #   1. This proves a listing is COMPLETE FOR THE TREE IT NAMES.  It does not
 #      prove the sender named the right tree.  A sender could emit a perfect
 #      listing of a STALE commit and it would verify green.  The commit id
-#      must be checked against the forge by someone with reach — which is the
+#      must be checked against the host by someone with reach — which is the
 #      courier, and is the residual trust this instrument cannot remove.
 #   2. It says nothing about whether the ferry CONTAINS the listed files.  It
 #      gives the receiver an authenticated inventory; diffing that inventory

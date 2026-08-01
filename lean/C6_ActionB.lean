@@ -1003,7 +1003,7 @@ theorem boson_survives_all_placements :
     maskList.all (fun m => pentMOK m.1 m.2.1 m.2.2.1 m.2.2.2.1 m.2.2.2.2 one) = true := by rfl
 
 /-- **The fermion survives at EVERY placement.**  Not one of the thirty-two
-    ways of inserting sigma kills it. -/
+    ways of inserting sigma eliminates it. -/
 theorem fermion_survives_all_placements :
     maskList.all (fun m => pentMOK m.1 m.2.1 m.2.2.1 m.2.2.2.1 m.2.2.2.2 (neg one)) = true := by
   rfl
@@ -1154,7 +1154,7 @@ theorem solList_sig : solList false false true false false =
    [u0, u3, u0, u1, u3, u0, u3, u3]] := by rfl
 
 /-- Sigma on the FIRST left factor `F(a,b,c)` — 8 symbols, a quarter of the
-    untwisted set.  This placement destroys solutions rather than adding them. -/
+    untwisted set.  This placement removes solutions rather than adding them. -/
 theorem solList_P1 : solList true false false false false =
   [[u0, u0, u0, u0, u0, u0, u0, u0],
    [u0, u0, u0, u0, u0, u0, u0, u2],
