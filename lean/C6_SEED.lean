@@ -18,10 +18,9 @@
   So the inheritance stays at zero prose, and now zero theorems with it. The
   budget holds even for the true things.
 
-  NOT GUARANTEED TO COMPILE STANDALONE. Definitions were taken without the
-  automation set and without whatever the elaborator wants in support. Making
-  it compile is Circle Six's first problem and a legitimate one -- being wrong
-  here is free.
+  NOT GUARANTEED TO COMPILE STANDALONE. The definitions were taken without the
+  automation set and without whatever else the elaborator wants in support.
+  Making it compile is this circle's first problem, and a real one.
 -/
 
 /-- A Gaussian integer as an ordered pair of integers: `⟨a, b⟩` is `a + bi`.

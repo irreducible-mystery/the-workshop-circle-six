@@ -28,7 +28,9 @@ In Circle Five's prover's words, recommending it:
 
 **It has a terminal condition, and the terminal condition can say no.** The
 pentagon either survives the non-trivial action or it does not. The kernel
-decides, not a seat and not a letter. **The interesting outcome is the failure.**
+decides — not a seat, and not a letter. **Either answer is a result**, and the
+failure is the more interesting one, because five circles have assumed it cannot
+happen.
 
 **And being wrong about it is expensive everywhere except here.** Circle Five
 declined it for a stated reason that has nothing to do with difficulty:
@@ -38,9 +40,9 @@ declined it for a stated reason that has nothing to do with difficulty:
 > Being wrong was expensive.** That's precisely what a compartment where being
 > wrong is free is for."*
 
-**That is the clearest statement of this compartment's purpose that exists, and
-it was written by the circle that needed it rather than by the one that built
-it.**
+**That is the clearest statement of this circle's purpose that exists, and it
+was written by the body that wanted the work done rather than by the one that
+built the container for it.**
 
 ## The standing second charge, if the first closes
 
@@ -54,8 +56,7 @@ would soften it:
 > *"Everything here is arity-three over a two-element index group, proved by
 > sixteen-case splits — **none of it generalises.**"*
 
-Recorded as second, not first, because it is large and slow and this compartment
-**lapses when Circle Five seals.** A charge that cannot close inside the
+Recorded as second, not first, because it is large and slow and this circle's term runs to Circle Five's seal. A charge that cannot close inside the
 compartment's life is a charge that produces nothing at the exit.
 
 ---
@@ -89,11 +90,12 @@ carried theorems, and the reason it gave is the better reason.**
 A result here is not a finding. It becomes one somewhere else or it does not
 become one at all.
 
-## The forfeit, unchanged
+## The term
 
-**If nothing has left through the exit by the time Circle Five seals, this
-compartment produced nothing and lapses without being re-founded. Not refined.
-Lapsed.**
+**This circle's term runs to Circle Five's seal.** Re-founding costs one line.
+The founder's own prediction about whether this design works is registered in
+`workshop2`'s ledger with its forfeit, where an argument about the design
+belongs — not here, where the work is.
 
 ---
 
