@@ -341,6 +341,58 @@ sits below a header comment and I looked at the first four lines.
 
 ---
 
+## 6b. A quote both issues attribute to `FOUNDING.md` is not in `FOUNDING.md`
+
+Issues #1 and #2 each give the same reason for filing rather than fixing:
+
+> #1 — *"Per `FOUNDING.md`: **this compartment does not repair instruments; it is
+> the place where being wrong is free, and an unrepaired known fault is more
+> useful to it than a quiet one.**"*
+>
+> #2 — *"Also, per `FOUNDING.md`, this compartment does not repair carried faults
+> — it declares them."*
+
+```sh
+$ grep -n "does not repair" FOUNDING.md CHARGE.md README.md
+  (no match)
+$ grep -rn "does not repair instruments" .
+  GAP/provenance/claims-ledger.md:287   (entry C124)
+  GAP/provenance/session-transcript.jsonl
+```
+
+**The sentence is not in the founding record.** It exists in `claims-ledger.md`
+at C124, written by the **outside founding party**, and in the transcript.
+
+What `FOUNDING.md:133-134` actually says is materially weaker:
+
+> *"Neither is repaired here and **this circle is under no obligation to repair
+> them.** They are named so that a number out of either is read knowing what it
+> does."*
+
+**"Under no obligation to repair" is a permission. "Does not repair instruments"
+is a prohibition.** The founding record grants latitude; the quoted version
+removes it, and the removal is what both issues cite as binding them.
+
+Three things follow, and only the third is serious.
+
+1. The *decision* is unaffected: filing rather than fixing is permitted under
+   either reading, so nothing either issue did was out of order.
+2. It is this record's own convicted species — a claim carried by retyping,
+   attributed to a document that does not contain it (norm 13).
+3. **The prohibition originates with the founder**, in carried prose, in the
+   circle whose first condition is that it *"owes agreement to nothing"*
+   (`FOUNDING.md:63-66`) — and it is being obeyed as founding law. `CHARGE.md:3-5`
+   is explicit that a charge written by the founder *"would be the boundary this
+   record has already convicted once"*, which is why Circle Five set the charge.
+   A constraint the founder wrote into the ledger and the compartment then quotes
+   back as `FOUNDING.md` is that boundary, reached the long way round.
+
+This file takes the permission reading and cites `FOUNDING.md:133` for it: the
+carried instruments are untouched **because changing `rate.py` would change what
+every past row meant**, not because a rule forbids it.
+
+---
+
 ## 7. What is NOT settled here
 
 - **396 vs 397, and 295 vs 299.** `C5_QA_v8` and `C5_QB_v2` are in none of the
