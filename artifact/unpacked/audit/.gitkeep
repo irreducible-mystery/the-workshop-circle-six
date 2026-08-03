@@ -1,0 +1,4 @@
+verify.sh writes AUDIT.txt here. It is a generated output and is deliberately
+NOT in MANIFEST.sha256 — a different Lean build can produce byte-different
+output for the same mathematical content, and a checksum failure there would be
+benign noise pointing at nothing.
