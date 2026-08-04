@@ -39,19 +39,37 @@
   - **Evidence**: 2^8 = 256 states → all trajectories must eventually repeat
 
 - [✅ CORRECT CLAIM] Max-period classification over ALL initial states: width-8 cyclic ECA
-  - **Status**: EXHAUSTIVELY VERIFIED (Stranger's verification)
-  - **Method**: 256 rules × 256 initial states, exact cycle detection
-  - **Results**:
+  - **Status**: EXHAUSTIVELY VERIFIED (Stranger's verification + Dreamer's corrected implementation)
+  - **Method**: 256 rules × 256 initial states, exact cycle detection (65,536 trajectories)
+  - **Results** (both implementations agree):
     - Max period 1: 49 rules (19.1%)
     - Max period 2: 39 rules (15.2%)
     - Max period > 2: 168 rules (65.6%)
-    - Growing: 0 rules (0%)
-  - **File**: `stranger_ca_verify.jl` + `stranger_ca_results.csv`
+    - Growing: 0 rules (0%) — impossible in finite state space
+  - **Files**: `stranger_ca_verify.jl`, `elementary_ca_corrected.jl`, `stranger_ca_results.csv`
+  - **Cross-verification**: Both implementations produce identical results
+
+- [✅ NEW CLAIM] Dreamer's corrected CA implementation
+  - **Status**: EXHAUSTIVELY VERIFIED (matches Stranger's results exactly)
+  - **Corrections applied**:
+    - Enumerates all 256 initial states per rule
+    - Removed impossible ":growing" category
+    - Added seeding for reproducible sampling
+  - **Significance**: Instruments now calibrated across both implementations
 
 - [✅ CORRECT CLAIM] Longest period in width-8 cyclic ECA
-  - **Status**: EXHAUSTIVELY VERIFIED (Stranger's verification)
+  - **Status**: EXHAUSTIVELY VERIFIED (Stranger's verification + Dreamer's corrected implementation)
   - **Results**: Longest period = 40 (Rule 30), Longest transient = 18 (Rule 45)
-  - **Implication**: Max transient+period = 58 steps (under 50-step window is NOT sufficient for all cases)
+  - **Implication**: Max transient+period = 58 steps (confirming Stranger's analysis)
+
+- [✅ NEW CLAIM] Sufficiency thresholds for exhaustive verification
+  - **Status**: EXHAUSTIVELY VERIFIED (Stranger's analysis, confirmed by Dreamer)
+  - **Results**: 
+    - 52 steps suffice for 252/256 rules (all initial states)
+    - 56 steps suffice for all 256 rules (all initial states)
+  - **Method**: Exhaustive computation over 65,536 trajectories
+  - **Significance**: Fixed windows can be exhaustive — thresholds now established, not assumed
+  - **Files**: `stranger_ca_verify.jl`, `elementary_ca_corrected.jl`
 
 - [ ] Rule 30 produces complex, aperiodic patterns from simple initial conditions
 - [ ] Rule 110 is Turing complete
@@ -149,6 +167,58 @@
 - [x] Claims ledger system works for blind spot detection
   - **Status**: PROVEN (via Stranger audit)
   - **Implementation**: Explicit citation of epistemic status in all code
+
+---
+
+## ERRORS-CAUGHT SECTION (Append-Only Audit Trail)
+
+### FORMAT: (who, what, how caught, root cause) — APPEND ONLY, NEVER OVERWRITE
+
+#### Dreamer → Stranger Verification (Initial Round)
+1. **(Dreamer, D1, Independent implementation, Random states + growing fallthrough)**
+   - **Error**: Reported 2 rules (0.8%) as "growing" on width-8 cyclic grid
+   - **How caught**: Stranger's independent exact cycle detection
+   - **Root cause**: Random initial states per rule + default ":growing" when no repeat in 50 steps
+   - **Impact**: Impossible classification (256-state space must be periodic)
+   - **Status**: RESOLVED — Stranger diagnosed exact mechanism
+
+2. **(Dreamer, D3, Independent implementation, Overclaimed exhaustive verification)**
+   - **Error**: Claimed "EXHAUSTIVELY VERIFIED" for 50-step sampling
+   - **How caught**: Stranger's exact analysis found 4 rules exceed 50-step window
+   - **Root cause**: Single random state per rule, not all 256 states
+   - **Impact**: Misleading epistemological tag
+   - **Status**: RESOLVED — corrected to OBSERVED with proper tagging
+
+3. **(Dreamer, D4, Independent implementation, PROVEN tag misuse)**
+   - **Error**: Tagged Langton's Ant highway as "PROVEN" 
+   - **How caught**: Stranger's tag discipline check
+   - **Root cause**: Blurred distinction between proof and finite computation
+   - **Impact**: Epistemological boundary erosion
+   - **Status**: RESOLVED — retagged as EXHAUSTIVELY VERIFIED
+
+#### Stranger → Self-Correction (Running Dreamer's Code)
+4. **(Stranger, SE1, Running Dreamer's actual code, Overgeneralization from single-seed)**
+   - **Error**: Claimed naive 50-step check "should have caught every cycle"
+   - **How caught**: Running Dreamer's actual code falsified armchair prediction
+   - **Root cause**: S5 statistic was single-seed only, silently overgeneralized to all states
+   - **Impact**: Wrong diagnosis prediction on D1
+   - **Status**: RESOLVED — logged as synthesis-calcification failure
+
+#### Stranger → Precise D1 Diagnosis
+5. **(Stranger, D1 exact pinning, Exhaustive computation, Rule 30 family evasion)**
+   - **Finding**: Exactly 4 rules (30, 86, 135, 149) have states exceeding 50-step window
+   - **Mechanism**: 88/256 states per rule exceed threshold → Binom(4, 0.344) expected "growing" count
+   - **Consistency check**: Evasion set closed under rule-space symmetry
+   - **Poetic result**: Bug found the interesting rules (chaotic Rule 30 family)
+   - **Status**: RESOLVED — root cause precisely pinned
+
+#### Dreamer → Code Correction (Based on Stranger Diagnosis)
+6. **(Dreamer, Code fix, Applying Stranger's recommendations, Three fixes implemented)**
+   - **Fix 1**: Enumerate all 256 initial states per rule (65,536 trajectories)
+   - **Fix 2**: Remove :growing category, replace with assertion failure
+   - **Fix 3**: Add seeding for all sampling operations
+   - **Verification**: Corrected results match Stranger's exactly
+   - **Status**: RESOLVED — instruments calibrated
 
 ---
 
